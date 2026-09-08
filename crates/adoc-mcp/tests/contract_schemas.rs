@@ -5843,6 +5843,71 @@ fn migration_request_and_actual_receipt_match_portable_schemas() {
     let value: serde_json::Value =
         serde_json::from_str(&receipt.to_canonical_json().unwrap()).unwrap();
     assert_valid("adoc.migration_receipt.v0.schema.json", &value);
+    let job = json!({"schema_version":"agentdoc.cloud.migration_import_job.v0","connector_id":"connector","observed_at":"2026-09-08T12:00:00Z","source_acl_scope":{"snapshot_id":"acl","source_container_id":"s","source":{"kind":"repository","id":"repo"}},"sources":[{"path":"docs/index.adoc","source_record_id":"record","source_binding_id":"binding"}]});
+    let job_schema = "agentdoc.cloud.migration_import_job.v0.schema.json";
+    assert_valid(job_schema, &job);
+    let import = adoc_core::import_migration_from_git(
+        root,
+        &bytes,
+        &serde_json::to_vec(&job).unwrap(),
+        "0.4.0".into(),
+        format!("sha256:{}", "a".repeat(64)),
+    )
+    .unwrap();
+    let bundle: serde_json::Value =
+        serde_json::from_str(&import.to_canonical_json().unwrap()).unwrap();
+    assert_valid("adoc.migration_import.v0.schema.json", &bundle);
+    for (field, nested_schema) in [
+        ("source_record_bytes", "adoc.source_record.v1.schema.json"),
+        ("source_binding_bytes", "adoc.source_binding.v0.schema.json"),
+        (
+            "source_invocation_bytes",
+            "agentdoc.cloud.migration_validation_invocation.v0.schema.json",
+        ),
+        (
+            "validation_receipt_bytes",
+            "adoc.validation_receipt.v1.schema.json",
+        ),
+    ] {
+        let nested: serde_json::Value =
+            serde_json::from_str(bundle["sources"][0][field].as_str().unwrap()).unwrap();
+        assert_valid(nested_schema, &nested);
+        let mut wrong = nested;
+        wrong["foreign"] = json!(true);
+        assert!(!schema_accepts(nested_schema, &wrong));
+    }
+    for (pointer, bad) in [
+        ("/sources", json!([])),
+        ("/sources/0/path", json!("../escape")),
+        ("/observed_at", json!("2026-09-08T12:00:00.1Z")),
+        ("/source_acl_scope/source/kind", json!("project")),
+    ] {
+        let mut invalid = job.clone();
+        *invalid.pointer_mut(pointer).unwrap() = bad;
+        assert!(!schema_accepts(job_schema, &invalid), "{pointer}");
+        assert!(
+            adoc_core::import_migration_from_git(
+                root,
+                &bytes,
+                &serde_json::to_vec(&invalid).unwrap(),
+                "0.4.0".into(),
+                format!("sha256:{}", "a".repeat(64))
+            )
+            .is_err()
+        );
+    }
+    let mut invalid_bundle = bundle;
+    invalid_bundle["foreign"] = json!(true);
+    assert!(!schema_accepts(
+        "adoc.migration_import.v0.schema.json",
+        &invalid_bundle
+    ));
+    let result = json!({"schema_version":"agentdoc.cloud.migration_import_result.v0","request_id":"r","candidates":[{"object_id":"test.claim","canonical_id":"canonical","version_id":"version","source_record_id":"record","source_binding_id":"binding"}]});
+    assert_valid(
+        "agentdoc.cloud.migration_import_result.v0.schema.json",
+        &result,
+    );
+
     for (field, bad) in [
         ("foreign", json!(true)),
         ("revision", json!({"system":"git", "value":"HEAD"})),

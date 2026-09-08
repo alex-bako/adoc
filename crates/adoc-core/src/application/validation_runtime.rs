@@ -18,9 +18,9 @@
 //! into `inputs`. Digest-bound evidence is E4.1's Source Record surface.
 //!
 //! Validator-only construction (stop-ship, MILESTONES §E1.7): the fields of
-//! [`ValidationReceipt`] are private and [`run_validation_runtime`] is the
-//! only constructor path, so unvalidated JSON has no core representation
-//! downstream code can consume. The guarantee rests on field privacy and
+//! [`ValidationReceipt`] are private. The public runtime and crate-private
+//! migration entry share one validator body; unvalidated JSON has no core
+//! representation downstream code can consume. The guarantee rests on field privacy and
 //! the deliberate ABSENCE of a `Deserialize` derive — never derive
 //! `Deserialize` on [`ValidationReceipt`]: a consumer of receipt bytes must
 //! parse into its own shape and verify digests, or forged receipts become
@@ -111,12 +111,14 @@ pub struct ValidationRuntimeInput {
 pub struct ValidationRuntimeOutcome {
     pub receipt: ValidationReceipt,
     pub diagnostics: Vec<Diagnostic>,
+    pub(crate) graph_artifact: Option<String>,
+    pub(crate) source_files: Vec<SourceFile>,
 }
 
 /// Digest-bound AgentDoc validation receipt (SEMANTICS §S6).
 ///
-/// Constructible only by [`run_validation_runtime`]; serialized with
-/// [`ValidationReceipt::to_canonical_json`]. Unvalidated JSON has no core
+/// Constructible only by this module's shared runtime validator; serialized
+/// with [`ValidationReceipt::to_canonical_json`]. Unvalidated JSON has no core
 /// representation:
 ///
 /// ```compile_fail
@@ -208,8 +210,8 @@ pub enum ValidationRuntimeError {
     ContextUnreadable { path: PathBuf, message: String },
 }
 
-/// Run AgentDoc-domain validation and construct the digest-bound receipt —
-/// the ONLY constructor path for [`ValidationReceipt`].
+/// Run AgentDoc-domain validation and construct the digest-bound receipt through
+/// the same validator body used by exact-snapshot migration imports.
 pub fn run_validation_runtime(
     input: ValidationRuntimeInput,
 ) -> Result<ValidationRuntimeOutcome, ValidationRuntimeError> {
@@ -233,6 +235,39 @@ fn run_with_provider<P: SourceProvider>(
     provider: &P,
     input: ValidationRuntimeInput,
 ) -> Result<ValidationRuntimeOutcome, ValidationRuntimeError> {
+    run_with_context_bytes(provider, input, None)
+}
+
+/// Revalidate the whole once-read snapshot with exact migration context bytes.
+/// The same validator constructs the receipt; no externally supplied receipt is consumed.
+pub(crate) fn run_migration_validation(
+    mut input: ValidationRuntimeInput,
+    source_files: &[SourceFile],
+    invocation: &[u8],
+    graph: &[u8],
+) -> Result<ValidationRuntimeOutcome, ValidationRuntimeError> {
+    let provider = match &input.project {
+        Some(project) => FsSourceProvider::for_project(
+            input.root.clone(),
+            project.project_root.clone(),
+            project.docs_root.clone(),
+        ),
+        None => FsSourceProvider::new(input.root.clone()),
+    };
+    let snapshot = SnapshotSourceProvider {
+        sources: source_files.iter().cloned().map(Ok).collect(),
+        inner: &provider,
+    };
+    input.source_invocation = Some(PathBuf::from("source_invocation"));
+    input.context_artifact = Some(PathBuf::from("context_artifact"));
+    run_with_context_bytes(&snapshot, input, Some((invocation, graph)))
+}
+
+fn run_with_context_bytes<P: SourceProvider>(
+    provider: &P,
+    input: ValidationRuntimeInput,
+    migration_context: Option<(&[u8], &[u8])>,
+) -> Result<ValidationRuntimeOutcome, ValidationRuntimeError> {
     require_sha256_digest(&input.runtime_binary_digest)?;
     let receipt_schema_version = if input.source_invocation.is_some() {
         VALIDATION_RECEIPT_V1_SCHEMA_VERSION
@@ -253,19 +288,25 @@ fn run_with_provider<P: SourceProvider>(
     if let Some(source_invocation) = &input.source_invocation {
         context.push(NamedDigestEntry {
             name: "source_invocation".to_string(),
-            digest: file_digest(source_invocation)?,
+            digest: match migration_context {
+                Some((bytes, _)) => sha256_prefixed(bytes),
+                None => file_digest(source_invocation)?,
+            },
         });
     }
 
     // ONE artifact read: the same bytes are digested and validated.
     let context_artifact_bytes = match &input.context_artifact {
         Some(artifact_path) => {
-            let bytes = fs::read(artifact_path).map_err(|error| {
-                ValidationRuntimeError::ContextUnreadable {
-                    path: artifact_path.clone(),
-                    message: error.to_string(),
-                }
-            })?;
+            let bytes = match migration_context {
+                Some((_, bytes)) => bytes.to_vec(),
+                None => fs::read(artifact_path).map_err(|error| {
+                    ValidationRuntimeError::ContextUnreadable {
+                        path: artifact_path.clone(),
+                        message: error.to_string(),
+                    }
+                })?,
+            };
             context.push(NamedDigestEntry {
                 name: "context_artifact".to_string(),
                 digest: sha256_prefixed(&bytes),
@@ -387,6 +428,12 @@ fn run_with_provider<P: SourceProvider>(
     Ok(ValidationRuntimeOutcome {
         receipt,
         diagnostics,
+        graph_artifact: compiled.artifacts.map(|artifacts| artifacts.graph_json),
+        source_files: snapshot
+            .sources
+            .into_iter()
+            .filter_map(Result::ok)
+            .collect(),
     })
 }
 
@@ -713,6 +760,59 @@ mod tests {
             semantic_context: None,
             semantic_context_expectations: None,
         }
+    }
+
+    #[test]
+    fn migration_validation_reuses_all_source_bytes_and_checks_bound_graph() {
+        let workspace = tempfile::tempdir().expect("workspace");
+        let root = workspace.path();
+        write(&root.join("one.adoc"), valid_source());
+        write(
+            &root.join("two.adoc"),
+            "# Other @doc(test.other)\n\nIndependent prose.\n",
+        );
+        let input = standalone_input(root);
+        let original = run_validation_runtime(input.clone()).expect("original validation");
+        assert_eq!(original.receipt.result(), ValidationResult::Pass);
+        assert_eq!(original.source_files.len(), 2);
+        let graph = original.graph_artifact.as_ref().expect("compiled graph");
+        write(&root.join("one.adoc"), "::claim broken\n::\n");
+        let invocation = br#"{"stable":"source-metadata"}"#;
+        let validated = run_migration_validation(
+            input.clone(),
+            &original.source_files,
+            invocation,
+            graph.as_bytes(),
+        )
+        .expect("snapshot validation");
+        assert_eq!(validated.receipt.result(), ValidationResult::Pass);
+        let receipt = serde_json::to_value(&validated.receipt).expect("receipt");
+        assert_eq!(
+            receipt["inputs"],
+            serde_json::to_value(&original.receipt).expect("original receipt")["inputs"]
+        );
+        assert_eq!(receipt["context"][0]["digest"], sha256_prefixed(invocation));
+        assert_eq!(
+            receipt["context"][1]["digest"],
+            sha256_prefixed(graph.as_bytes())
+        );
+        let mut forged: serde_json::Value = serde_json::from_str(graph).expect("graph");
+        let node = forged["nodes"]
+            .as_array_mut()
+            .expect("nodes")
+            .iter_mut()
+            .find(|node| node["type"] == "knowledge_object")
+            .expect("object");
+        node["body"] = "Substituted source meaning.".into();
+        let failed = run_migration_validation(
+            input,
+            &original.source_files,
+            invocation,
+            &serde_json::to_vec(&forged).expect("forged graph"),
+        )
+        .expect("failed evidence");
+        assert_eq!(failed.receipt.result(), ValidationResult::Fail);
+        assert!(failed.diagnostics.iter().any(|diagnostic| diagnostic.code == DiagnosticCode::ValidationContextArtifactDrift));
     }
 
     /// Compile the workspace and return its graph artifact JSON — the

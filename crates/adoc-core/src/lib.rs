@@ -1096,28 +1096,63 @@ pub fn prepare_migration_from_git(
     application::migration::prepare_with_provider(
         request_bytes,
         &provider,
-        |snapshot| {
-            let config_path = snapshot.join("agentdoc.config.yaml");
-            let text = std::fs::read_to_string(&config_path)
-                .map_err(|_| MigrationError::ValidationUnavailable)?;
-            let config =
-                parse_project_config(&text).map_err(|_| MigrationError::ValidationUnavailable)?;
-            let root = snapshot.join(config.docs_path);
-            if !root.is_dir() {
-                return Err(MigrationError::ValidationUnavailable);
-            }
-            Ok(application::migration::MigrationValidationTarget {
-                project: Some(LocalProjectContext {
-                    project_root: snapshot.to_path_buf(),
-                    docs_root: root.clone(),
-                }),
-                root,
-                config_path: Some(config_path),
-            })
-        },
+        resolve_migration_target,
         runtime_version,
         runtime_binary_digest,
     )
+}
+
+pub use application::migration::MigrationImportBundle;
+pub use domain::migration::{
+    MIGRATION_IMPORT_JOB_MAX_BYTES, MIGRATION_IMPORT_JOB_SCHEMA_VERSION,
+    MIGRATION_IMPORT_MAX_BYTES, MIGRATION_IMPORT_SCHEMA_VERSION,
+    MIGRATION_VALIDATION_INVOCATION_SCHEMA_VERSION,
+};
+
+/// Produce bounded inactive candidate inputs from an exact worker-owned snapshot.
+pub fn import_migration_from_git(
+    repository: &std::path::Path,
+    request_bytes: &[u8],
+    job_bytes: &[u8],
+    runtime_version: String,
+    runtime_binary_digest: String,
+) -> Result<MigrationImportBundle, MigrationError> {
+    let request = MigrationRequest::parse(request_bytes)?;
+    domain::migration::MigrationImportJob::parse(job_bytes, &request)?;
+    let provider = infrastructure::git::worktree::GitWorktreeProvider::for_migration(
+        repository,
+        &request.revision.value,
+    )?;
+    application::migration::import_with_provider(
+        request_bytes,
+        job_bytes,
+        &provider,
+        resolve_migration_target,
+        runtime_version,
+        runtime_binary_digest,
+    )
+}
+
+fn resolve_migration_target(
+    snapshot: &std::path::Path,
+) -> Result<application::migration::MigrationValidationTarget, MigrationError> {
+    let config_path = snapshot.join("agentdoc.config.yaml");
+    let text =
+        std::fs::read_to_string(&config_path).map_err(|_| MigrationError::ValidationUnavailable)?;
+    let config = parse_project_config(&text).map_err(|_| MigrationError::ValidationUnavailable)?;
+    let root = snapshot.join(config.docs_path);
+    if !root.is_dir() {
+        return Err(MigrationError::ValidationUnavailable);
+    }
+    Ok(application::migration::MigrationValidationTarget {
+        project: Some(LocalProjectContext {
+            project_root: snapshot.to_path_buf(),
+            docs_root: root.clone(),
+        }),
+        root,
+        config_path: Some(config_path),
+        config_bytes: text,
+    })
 }
 
 #[cfg(test)]

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/agentdoc.cloud.migration_import_job.v0.schema.json",
+  "title": "AgentDoc Cloud Migration Import Job",
+  "description": "Stable trusted job metadata; maximum512 KiB UTF8. Source paths and each ID set must be unique and exactly cover the prepared snapshot inputs. ACL repository and source container must match the request. Domain producer validates these cross-field bindings.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "connector_id",
+    "observed_at",
+    "source_acl_scope",
+    "sources"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "agentdoc.cloud.migration_import_job.v0"
+    },
+    "connector_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^\\S(?:[^\\u0000-\\u001f\\u007f-\\u009f]*\\S)?$"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "source_acl_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot_id",
+        "source_container_id",
+        "source"
+      ],
+      "properties": {
+        "snapshot_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f\\u007f-\\u009f]*\\S)?$"
+        },
+        "source_container_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f\\u007f-\\u009f]*\\S)?$"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "repository"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f\\u007f-\\u009f]*\\S)?$"
+            }
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "source_record_id",
+          "source_binding_id"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^(?![A-Za-z]:)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+(?:/[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+)*$"
+          },
+          "source_record_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^\\S(?:[^\\u0000-\\u001f\\u007f-\\u009f]*\\S)?$"
+          },
+          "source_binding_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^\\S(?:[^\\u0000-\\u001f\\u007f-\\u009f]*\\S)?$"
+          }
+        }
+      }
+    }
+  }
+}

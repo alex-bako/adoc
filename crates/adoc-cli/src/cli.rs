@@ -462,6 +462,17 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
+    /// Export exact-snapshot source evidence and inactive candidate inputs.
+    MigrationImport {
+        #[arg(long)]
+        request: PathBuf,
+        #[arg(long)]
+        job: PathBuf,
+        #[arg(long)]
+        repository: PathBuf,
+        #[arg(long)]
+        runtime_binary_digest: String,
+    },
     /// Prepare a full exact-commit migration receipt in an isolated worker.
     MigrationPrepare {
         #[arg(long)]

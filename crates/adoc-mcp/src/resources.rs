@@ -713,6 +713,46 @@ const RESOURCES: &[AgentResource] = &[
         ),
     },
     AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_import_job.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration_import_job-v0-json",
+        title: "Migration Import Contract JSON Schema",
+        description: "Exact-snapshot migration import contract; candidate preparation grants no activation authority.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_import_job.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_validation_invocation.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration_validation_invocation-v0-json",
+        title: "Migration Import Contract JSON Schema",
+        description: "Exact-snapshot migration import contract; candidate preparation grants no activation authority.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_validation_invocation.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/adoc.migration_import.v0.schema.json",
+        name: "schema-adoc-migration_import-v0-json",
+        title: "Migration Import Contract JSON Schema",
+        description: "Exact-snapshot migration import contract; candidate preparation grants no activation authority.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/adoc.migration_import.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_import_result.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration_import_result-v0-json",
+        title: "Migration Import Contract JSON Schema",
+        description: "Exact-snapshot migration import contract; candidate preparation grants no activation authority.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_import_result.v0.schema.json"
+        ),
+    },
+    AgentResource {
         uri: "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json",
         name: "schema-adoc-migration-request-v0-json",
         title: "AgentDoc Migration Request JSON Schema",

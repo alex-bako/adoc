@@ -71,6 +71,9 @@ This table inventories the implemented `adoc` release-train surfaces (CLI, MCP s
 | `adoc.portable_projection.v0` | unreleased | adoc 0.4.x pure core and bounded CLI | Cloud E6.6.T5 archive writer | exact-match complete/partial/failed envelope; existing lifecycle mapping/projection version 1 and strict workspace compiler; canonical identity bindings and explicit losses; valid partial/failed outcomes preserve native records |
 | `adoc.migration_request.v0` | shipped | adoc 0.4.0 | adoc 0.4.0 CLI and Cloud E7.1 worker; MCP schema resource | exact-match portable preparation request; bounded complete source bindings and explicit evaluation date; full nonzero lowercase Git commit SHA-1 only; Cloud transport wrapper remains separate |
 | `adoc.migration_receipt.v0` | shipped | adoc 0.4.0 | Cloud E7.1 worker; MCP schema resource | exact-match validator-only prepare receipt; binds exact request bytes digest, detached commit validation receipt and full diagnostics; grants no import, promotion or cutover authority |
+| `adoc.migration_import.v0` | shipped | adoc 0.4.0 | Cloud E7.1 native candidate importer; MCP schema resource | exact-match bounded candidate input bundle; exact request/job digests, original graph/config/source bytes and full-snapshot per-source validation receipts; no qualification, activation or promotion authority |
+| `agentdoc.cloud.migration_import_job.v0` | shipped | Cloud E7.1 trusted job controller (Cloud-owned contract) | adoc 0.4.0 bounded import CLI; MCP schema resource | exact-match stable per-source metadata; complete source path set, observation time and repository ACL scope; inventoried here as an implemented Adoc input, not portable domain authority |
+| `agentdoc.cloud.migration_validation_invocation.v0` | shipped | adoc 0.4.0 migration adapter (Cloud-owned contract) | Cloud E7.1 native candidate importer; MCP schema resource | exact-version Cloud source invocation extends the existing nine fields with source_path and request_digest; full-snapshot runtime receipts remain v1; no Cloud policy interpreted by Adoc |
 <!-- /registry:envelopes-shipped-adoc -->
 
 ## Envelopes — shipped, owner `action`
@@ -178,6 +181,7 @@ The 13 `agentdoc.cloud.*` rows below whose owning slice is E5 also inventory imp
 | `agentdoc.cloud.export_native_fact.v0` | cloud | E6.6.T5 | Closed per-kind native_json facts for inventory members without retained wire bytes; no historical byte-attestation claim; exact version and closed schema |
 | `agentdoc.cloud.portable_export_receipt.v0` | cloud | E6.6.T5 | Immutable native prepared/release_authorized audit receipt; binds selection and optional exact manifest hash, current actor/session/scope and authorization; never client download acknowledgment; exact version and closed schema |
 | `agentdoc.cloud.portable_export_finalization.v0` | cloud | E6.6.T5 | Closed release_authorized/selection_changed response; changed access or frozen content releases no archive and requires a fresh request; exact version and closed schema |
+| `agentdoc.cloud.migration_import_result.v0` | cloud | E7.1 | native import RPC transport response maps the request to inactive candidate IDs; no portable domain or activation authority; schema published |
 <!-- /registry:envelopes-planned -->
 
 ## Diagnostic Codes — shipped, owner `adoc`
@@ -369,6 +373,9 @@ Explicit mapping (RT-21, like the attestation family): `audit.persistence_failed
 | `migration.snapshot_unavailable` |
 | `migration.unsafe_source` |
 | `migration.validation_unavailable` |
+| `migration.invalid_job` |
+| `migration.validation_failed` |
+| `migration.output_limit` |
 <!-- /registry:diagnostic-codes -->
 
 ## Gateway audit codes — owner `adoc`

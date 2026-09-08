@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/adoc.migration_import.v0.schema.json",
+  "title": "AgentDoc Exact Snapshot Migration Import Bundle",
+  "description": "Validator-only source evidence and candidate inputs, never activation or promotion authority. Maximum8 MiB UTF8 serialized output. Nested byte strings retain exact canonical producer bytes; SourceRecord v1, SourceBinding v0 and ValidationReceipt v1 semantics remain unchanged. Every source receipt covers the full input set and exact graph/config artifacts. Original graph object IDs, Source Bindings and semantic hashes are preserved.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "request",
+    "request_digest",
+    "job_digest",
+    "config_bytes",
+    "graph_artifact_bytes",
+    "sources"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "adoc.migration_import.v0"
+    },
+    "request": {
+      "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json"
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "job_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "config_bytes": {
+      "type": "string"
+    },
+    "graph_artifact_bytes": {
+      "type": "string"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "source_bytes",
+          "source_record_bytes",
+          "source_binding_bytes",
+          "source_invocation_bytes",
+          "validation_receipt_bytes"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^(?![A-Za-z]:)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+(?:/[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+)*$"
+          },
+          "source_bytes": {
+            "type": "string"
+          },
+          "source_record_bytes": {
+            "type": "string"
+          },
+          "source_binding_bytes": {
+            "type": "string"
+          },
+          "source_invocation_bytes": {
+            "type": "string"
+          },
+          "validation_receipt_bytes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

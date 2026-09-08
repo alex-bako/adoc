@@ -59,6 +59,9 @@ macro_rules! diagnostic_codes {
 }
 
 diagnostic_codes! {
+    MigrationInvalidJob = "migration.invalid_job" => "Supply complete stable per-source metadata and matching repository ACL scope.";
+    MigrationValidationFailed = "migration.validation_failed" => "Correct all source validation errors before importing candidates.";
+    MigrationOutputLimit = "migration.output_limit" => "Reduce the migration scope to the supported bounded bundle size.";
     MigrationInvalidRequest = "migration.invalid_request" => "Supply the exact migration request contract with complete bindings.";
     MigrationExactRevisionRequired = "migration.exact_revision_required" => "Supply a full nonzero lowercase Git commit SHA-1.";
     MigrationSnapshotUnavailable = "migration.snapshot_unavailable" => "Make the requested exact commit available in the worker repository.";

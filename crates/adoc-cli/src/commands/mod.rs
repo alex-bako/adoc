@@ -199,6 +199,8 @@ fn print_summary(diagnostics: &[Diagnostic]) {
     println!("{}", format_summary(diagnostics));
 }
 
+mod migration_import;
+pub(crate) use migration_import::migration_import;
 mod migration_prepare;
 pub(crate) use migration_prepare::migration_prepare;
 

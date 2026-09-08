@@ -68,6 +68,12 @@ fn run(arguments: impl IntoIterator<Item = String>) -> i32 {
                 return 2;
             }
             match cli.command {
+                Commands::MigrationImport {
+                    request,
+                    job,
+                    repository,
+                    runtime_binary_digest,
+                } => commands::migration_import(request, job, repository, runtime_binary_digest),
                 Commands::MigrationPrepare {
                     request,
                     repository,
