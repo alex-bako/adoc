@@ -22,6 +22,7 @@ use super::util::clear_git_env;
 pub(crate) struct GitWorktreeProvider {
     repo_root: PathBuf,
     expected_workdir_head: Option<String>,
+    hardened: bool,
 }
 
 impl GitWorktreeProvider {
@@ -29,6 +30,7 @@ impl GitWorktreeProvider {
         Self {
             repo_root: repo_root.into(),
             expected_workdir_head: None,
+            hardened: false,
         }
     }
 
@@ -43,7 +45,7 @@ impl SnapshotWorkspaceProvider for GitWorktreeProvider {
         match selector {
             SnapshotSelector::Workdir => {
                 if let Some(expected) = &self.expected_workdir_head {
-                    verify_head(&self.repo_root, expected)?;
+                    verify_head(&self.repo_root, expected, self.hardened)?;
                 }
                 Ok(SnapshotWorkspace::workdir(self.repo_root.clone()))
             }
@@ -54,31 +56,133 @@ impl SnapshotWorkspaceProvider for GitWorktreeProvider {
 
 impl GitWorktreeProvider {
     fn checkout_ref(&self, spec: &str) -> Result<SnapshotWorkspace, SnapshotError> {
-        let sha = resolve_ref(&self.repo_root, spec)?;
-        let project_prefix = project_prefix(&self.repo_root)?;
+        let sha = resolve_ref(&self.repo_root, spec, self.hardened)?;
+        if self.hardened && sha != spec {
+            return Err(SnapshotError::UnresolvableRef {
+                spec: spec.into(),
+                reason: "exact commit mismatch".into(),
+            });
+        }
+        let project_prefix = project_prefix(&self.repo_root, self.hardened)?;
 
         let tmp = generate_worktree_path();
-        add_worktree(&self.repo_root, &tmp, &sha)?;
-        verify_head(&tmp, &sha)?;
 
         let repo_root = self.repo_root.clone();
         let tmp_for_cleanup = tmp.clone();
+        let hardened = self.hardened;
         let cleanup = Box::new(move || {
-            run_git_worktree_remove(&repo_root, &tmp_for_cleanup);
+            run_git_worktree_remove(&repo_root, &tmp_for_cleanup, hardened);
             // Best-effort fallback in case `git worktree remove` left
             // residue (e.g. partial worktree-add).
             let _ = fs::remove_dir_all(&tmp_for_cleanup);
         });
 
-        Ok(SnapshotWorkspace::with_cleanup(
-            tmp.join(project_prefix),
-            cleanup,
-        ))
+        let workspace = SnapshotWorkspace::with_cleanup(tmp.join(project_prefix), cleanup);
+        add_worktree(&self.repo_root, &tmp, &sha, self.hardened)?;
+        verify_head(&tmp, &sha, self.hardened)?;
+        Ok(workspace)
     }
 }
 
-fn project_prefix(project_root: &Path) -> Result<PathBuf, SnapshotError> {
-    let output = run_git(project_root, &["rev-parse", "--show-prefix"])?;
+impl GitWorktreeProvider {
+    pub(crate) fn for_migration(
+        repo: &Path,
+        revision: &str,
+    ) -> Result<Self, crate::MigrationError> {
+        use crate::MigrationError;
+        let resolved =
+            resolve_ref(repo, revision, true).map_err(|_| MigrationError::SnapshotUnavailable)?;
+        if resolved != revision {
+            return Err(MigrationError::SnapshotUnavailable);
+        }
+        if !project_prefix(repo, true)
+            .map_err(|_| MigrationError::SnapshotUnavailable)?
+            .as_os_str()
+            .is_empty()
+        {
+            return Err(MigrationError::UnsafeSource);
+        }
+        let tree = run_git(repo, &["ls-tree", "-rz", "--full-tree", revision], true)
+            .map_err(|_| MigrationError::SnapshotUnavailable)?;
+        if !tree.status.success() {
+            return Err(MigrationError::SnapshotUnavailable);
+        }
+        for entry in tree.stdout.split(|b| *b == 0).filter(|e| !e.is_empty()) {
+            let Some(tab) = entry.iter().position(|b| *b == b'\t') else {
+                return Err(MigrationError::UnsafeSource);
+            };
+            let path = &entry[tab + 1..];
+            // ponytail: refuse all attributes, symlinks and gitlinks; add a verified
+            // raw-blob materializer when migrations need those repository features.
+            if !(entry.starts_with(b"100644 ") || entry.starts_with(b"100755 "))
+                || path
+                    .rsplit(|b| *b == b'/')
+                    .next()
+                    .is_some_and(|name| name.eq_ignore_ascii_case(b".gitattributes"))
+            {
+                return Err(MigrationError::UnsafeSource);
+            }
+        }
+        let attributes = run_git(repo, &["rev-parse", "--git-path", "info/attributes"], true)
+            .map_err(|_| MigrationError::UnsafeSource)?;
+        if !attributes.status.success() {
+            return Err(MigrationError::UnsafeSource);
+        }
+        let path = std::str::from_utf8(&attributes.stdout)
+            .map_err(|_| MigrationError::UnsafeSource)?
+            .trim();
+        match fs::read(repo.join(path)) {
+            Ok(bytes) if !bytes.is_empty() => return Err(MigrationError::UnsafeSource),
+            Err(error) if error.kind() != std::io::ErrorKind::NotFound => {
+                return Err(MigrationError::UnsafeSource);
+            }
+            _ => {}
+        }
+        Ok(Self {
+            repo_root: repo.to_path_buf(),
+            expected_workdir_head: None,
+            hardened: true,
+        })
+    }
+}
+
+fn git_command(hardened: bool) -> Command {
+    let mut command = Command::new("git");
+    if hardened {
+        command
+            .env_clear()
+            .env("PATH", "/usr/bin:/bin")
+            .env("GIT_CONFIG_NOSYSTEM", "1")
+            .env("GIT_CONFIG_GLOBAL", "/dev/null")
+            .env("GIT_NO_REPLACE_OBJECTS", "1")
+            .env("GIT_ATTR_NOSYSTEM", "1")
+            .env("GIT_TERMINAL_PROMPT", "0")
+            .args([
+                "-c",
+                "core.hooksPath=/dev/null",
+                "-c",
+                "core.fsmonitor=false",
+                "-c",
+                "core.sparseCheckout=false",
+                "-c",
+                "core.sparseCheckoutCone=false",
+                "-c",
+                "core.attributesFile=/dev/null",
+                "-c",
+                "core.autocrlf=false",
+                "-c",
+                "core.symlinks=true",
+                "-c",
+                "submodule.recurse=false",
+                "-c",
+                "protocol.allow=never",
+            ]);
+    }
+    command
+}
+
+fn project_prefix(project_root: &Path, hardened: bool) -> Result<PathBuf, SnapshotError> {
+    let output = run_git(project_root, &["rev-parse", "--show-prefix"], hardened)?;
     if !output.status.success() {
         return Err(SnapshotError::ProviderUnavailable {
             reason: String::from_utf8_lossy(&output.stderr).into_owned(),
@@ -92,8 +196,12 @@ fn project_prefix(project_root: &Path) -> Result<PathBuf, SnapshotError> {
     Ok(PathBuf::from(value.trim_end_matches(['\r', '\n'])))
 }
 
-fn verify_head(repo_root: &Path, expected: &str) -> Result<(), SnapshotError> {
-    let output = run_git(repo_root, &["rev-parse", "--verify", "HEAD^{commit}"])?;
+fn verify_head(repo_root: &Path, expected: &str, hardened: bool) -> Result<(), SnapshotError> {
+    let output = run_git(
+        repo_root,
+        &["rev-parse", "--verify", "HEAD^{commit}"],
+        hardened,
+    )?;
     if !output.status.success() || !head_output_matches(&output.stdout, expected) {
         return Err(SnapshotError::ProviderUnavailable {
             reason: format!("materialized HEAD did not match intended revision {expected}"),
@@ -109,10 +217,11 @@ fn head_output_matches(stdout: &[u8], expected: &str) -> bool {
         == Some(expected.as_bytes())
 }
 
-fn resolve_ref(repo_root: &Path, spec: &str) -> Result<String, SnapshotError> {
+fn resolve_ref(repo_root: &Path, spec: &str, hardened: bool) -> Result<String, SnapshotError> {
     let output = run_git(
         repo_root,
         &["rev-parse", "--verify", &format!("{spec}^{{commit}}")],
+        hardened,
     )?;
     if !output.status.success() {
         return Err(GitError::RefNotResolvable {
@@ -135,7 +244,12 @@ fn resolve_ref(repo_root: &Path, spec: &str) -> Result<String, SnapshotError> {
     Ok(sha.to_ascii_lowercase())
 }
 
-fn add_worktree(repo_root: &Path, tmp: &Path, spec: &str) -> Result<(), SnapshotError> {
+fn add_worktree(
+    repo_root: &Path,
+    tmp: &Path,
+    spec: &str,
+    hardened: bool,
+) -> Result<(), SnapshotError> {
     let output = run_git(
         repo_root,
         &[
@@ -150,6 +264,7 @@ fn add_worktree(repo_root: &Path, tmp: &Path, spec: &str) -> Result<(), Snapshot
             })?,
             spec,
         ],
+        hardened,
     )?;
     if !output.status.success() {
         return Err(GitError::WorktreeCreate {
@@ -161,14 +276,14 @@ fn add_worktree(repo_root: &Path, tmp: &Path, spec: &str) -> Result<(), Snapshot
     Ok(())
 }
 
-fn run_git_worktree_remove(repo_root: &Path, tmp: &Path) {
+fn run_git_worktree_remove(repo_root: &Path, tmp: &Path, hardened: bool) {
     // Drop-time cleanup: errors are absorbed (cannot propagate from Drop)
     // but recorded as best-effort. The fallback `fs::remove_dir_all` in
     // the caller covers cases where `git worktree remove` itself fails.
     let Some(tmp_str) = tmp.to_str() else {
         return;
     };
-    let mut command = Command::new("git");
+    let mut command = git_command(hardened);
     command
         .arg("-C")
         .arg(repo_root)
@@ -177,8 +292,8 @@ fn run_git_worktree_remove(repo_root: &Path, tmp: &Path) {
     let _ = command.output();
 }
 
-fn run_git(repo_root: &Path, args: &[&str]) -> Result<Output, SnapshotError> {
-    let mut command = Command::new("git");
+fn run_git(repo_root: &Path, args: &[&str], hardened: bool) -> Result<Output, SnapshotError> {
+    let mut command = git_command(hardened);
     command.arg("-C").arg(repo_root);
     for arg in args {
         command.arg(arg);

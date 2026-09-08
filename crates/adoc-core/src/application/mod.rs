@@ -27,3 +27,5 @@ pub(crate) fn local_today() -> chrono::NaiveDate {
 }
 
 pub mod read_access;
+
+pub(crate) mod migration;

@@ -69,6 +69,8 @@ This table inventories the implemented `adoc` release-train surfaces (CLI, MCP s
 | `agentdoc.connector_capabilities.v0` | shipped | adoc 0.4.x | Action adapter manifests; Cloud capability-policy validation (E4.5) | exact-match reader; binds one claimed publisher and exact adapter version to a non-empty capability-name-keyed manifest, making duplicate authoritative capability identities unrepresentable; each value carries one version, closed maturity and processing-mode vocabularies, explicit dependency/contract ranges, limitations, deployment modes, and optional qualification evidence; `ga` structurally requires an evidence reference, while Cloud independently authenticates publisher/qualification authority; overall stage is display-only and never policy input |
 | `adoc.portable_projection_input.v0` | unreleased | Cloud E6.6.T5 retained-byte adapter | adoc 0.4.x pure core and bounded CLI | exact-match private input; native-derived history completeness, exact UTF-8 node and retained event bytes, original decimal workspace ordinals and preservation references; no caller-computed lifecycle or authority claims |
 | `adoc.portable_projection.v0` | unreleased | adoc 0.4.x pure core and bounded CLI | Cloud E6.6.T5 archive writer | exact-match complete/partial/failed envelope; existing lifecycle mapping/projection version 1 and strict workspace compiler; canonical identity bindings and explicit losses; valid partial/failed outcomes preserve native records |
+| `adoc.migration_request.v0` | shipped | adoc 0.4.0 | adoc 0.4.0 CLI and Cloud E7.1 worker; MCP schema resource | exact-match portable preparation request; bounded complete source bindings and explicit evaluation date; full nonzero lowercase Git commit SHA-1 only; Cloud transport wrapper remains separate |
+| `adoc.migration_receipt.v0` | shipped | adoc 0.4.0 | Cloud E7.1 worker; MCP schema resource | exact-match validator-only prepare receipt; binds exact request bytes digest, detached commit validation receipt and full diagnostics; grants no import, promotion or cutover authority |
 <!-- /registry:envelopes-shipped-adoc -->
 
 ## Envelopes — shipped, owner `action`
@@ -135,8 +137,6 @@ The 13 `agentdoc.cloud.*` rows below whose owning slice is E5 also inventory imp
 | `adoc.source_acl_snapshot.v0` | adoc | E2.6 | immutable historical ACL provenance only; `source_acl_ceiling.snapshot_id` records the consulted snapshot while the nested `current_authorization` input in `adoc.authorization_decision.v0` independently proves freshness-bounded current access; contract-tested schema `adoc.source_acl_snapshot.v0.schema.json` |
 | `adoc.egress_policy.v0` | adoc | E6.6 | shared AgentDoc egress-policy domain contract reserved by E0.3; the separate `agentdoc.cloud.egress_policy.v0` row owns Cloud's external operation wrapper; provenance RT-21 |
 | `adoc.authorization_decision.v0` | adoc | E2.2 | `allow`/`deny`/`insufficient_context` decision record; extended at E2.4 with AgentDoc group and external-binding provenance |
-| `adoc.migration_request.v0` | adoc | E7.1 | portable exact-revision migration domain contract reserved by E0.3; Cloud's external operation wrapper is `agentdoc.cloud.migration_request.v0` |
-| `adoc.migration_receipt.v0` | adoc | E7.1 | portable migration-receipt domain contract reserved by E0.3; Cloud's external operation wrapper is `agentdoc.cloud.migration_receipt.v0` |
 | `agentdoc.cloud.assessment_submission.v0` | cloud | E4.4 | exact-version `/api/v1` assessment-submission transport; payload semantics and durable ingestion remain E4.6-owned |
 | `agentdoc.cloud.ingestion_result.v0` | cloud | E4.4 | exact-version ingestion-result transport; disposition semantics remain E4.6-owned |
 | `agentdoc.cloud.repository_config.v0` | cloud | E4.4 | exact-version external repository-configuration transport |
@@ -364,6 +364,11 @@ Explicit mapping (RT-21, like the attestation family): `audit.persistence_failed
 | `validation.context_artifact_drift` |
 | `projection.unavailable` |
 | `privacy.export_digest_mismatch` |
+| `migration.invalid_request` |
+| `migration.exact_revision_required` |
+| `migration.snapshot_unavailable` |
+| `migration.unsafe_source` |
+| `migration.validation_unavailable` |
 <!-- /registry:diagnostic-codes -->
 
 ## Gateway audit codes — owner `adoc`

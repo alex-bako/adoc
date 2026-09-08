@@ -713,6 +713,26 @@ const RESOURCES: &[AgentResource] = &[
         ),
     },
     AgentResource {
+        uri: "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json",
+        name: "schema-adoc-migration-request-v0-json",
+        title: "AgentDoc Migration Request JSON Schema",
+        description: "Portable exact-revision migration preparation request contract.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/adoc.migration_request.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/adoc.migration_receipt.v0.schema.json",
+        name: "schema-adoc-migration-receipt-v0-json",
+        title: "AgentDoc Migration Receipt JSON Schema",
+        description: "Portable exact-revision migration preparation receipt contract.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/adoc.migration_receipt.v0.schema.json"
+        ),
+    },
+    AgentResource {
         uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_receipt.v0.schema.json",
         name: "schema-agentdoc-cloud-migration-receipt-v0-json",
         title: "AgentDoc Cloud Migration Receipt JSON Schema",

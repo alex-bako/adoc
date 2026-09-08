@@ -23,3 +23,5 @@ pub use use_cases::{
     ReviewOutcome, ReviewPatchSource, SearchInput, SearchOutcome, StaleInput, StaleOutcome,
     WhyInput, WhyOutcome,
 };
+
+pub use use_cases::prepare_migration;

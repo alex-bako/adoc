@@ -1074,6 +1074,52 @@ pub use domain::managed_field_provenance::{
     validate_managed_field_provenance,
 };
 
+pub use application::migration::MigrationReceipt;
+pub use domain::migration::{
+    MIGRATION_RECEIPT_SCHEMA_VERSION, MIGRATION_REQUEST_MAX_BYTES,
+    MIGRATION_REQUEST_SCHEMA_VERSION, MigrationError, MigrationRequest,
+};
+
+/// Prepare an exact commit from a worker-owned repository. The caller must provide
+/// the isolated, network-denied execution boundary; this is not a sandbox.
+pub fn prepare_migration_from_git(
+    repository: &std::path::Path,
+    request_bytes: &[u8],
+    runtime_version: String,
+    runtime_binary_digest: String,
+) -> Result<MigrationReceipt, MigrationError> {
+    let request = MigrationRequest::parse(request_bytes)?;
+    let provider = infrastructure::git::worktree::GitWorktreeProvider::for_migration(
+        repository,
+        &request.revision.value,
+    )?;
+    application::migration::prepare_with_provider(
+        request_bytes,
+        &provider,
+        |snapshot| {
+            let config_path = snapshot.join("agentdoc.config.yaml");
+            let text = std::fs::read_to_string(&config_path)
+                .map_err(|_| MigrationError::ValidationUnavailable)?;
+            let config =
+                parse_project_config(&text).map_err(|_| MigrationError::ValidationUnavailable)?;
+            let root = snapshot.join(config.docs_path);
+            if !root.is_dir() {
+                return Err(MigrationError::ValidationUnavailable);
+            }
+            Ok(application::migration::MigrationValidationTarget {
+                project: Some(LocalProjectContext {
+                    project_root: snapshot.to_path_buf(),
+                    docs_root: root.clone(),
+                }),
+                root,
+                config_path: Some(config_path),
+            })
+        },
+        runtime_version,
+        runtime_binary_digest,
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use std::cell::Cell;

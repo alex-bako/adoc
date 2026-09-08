@@ -59,6 +59,11 @@ macro_rules! diagnostic_codes {
 }
 
 diagnostic_codes! {
+    MigrationInvalidRequest = "migration.invalid_request" => "Supply the exact migration request contract with complete bindings.";
+    MigrationExactRevisionRequired = "migration.exact_revision_required" => "Supply a full nonzero lowercase Git commit SHA-1.";
+    MigrationSnapshotUnavailable = "migration.snapshot_unavailable" => "Make the requested exact commit available in the worker repository.";
+    MigrationUnsafeSource = "migration.unsafe_source" => "Use a worker-owned repository without source transformations, symlinks, or submodules.";
+    MigrationValidationUnavailable = "migration.validation_unavailable" => "Supply valid committed project configuration and an attested runtime digest.";
     ParseRawHtml = "parse.raw_html" =>
         "Remove raw HTML or replace it with supported Markdown/ADoc syntax.";
     ParseUnsafeLink = "parse.unsafe_link" =>

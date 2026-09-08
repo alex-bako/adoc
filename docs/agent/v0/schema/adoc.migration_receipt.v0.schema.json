@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/adoc.migration_receipt.v0.schema.json",
+  "title": "AgentDoc Migration Preparation Receipt",
+  "description": "Validator-only preparation evidence, never import, promotion, or cutover authority. request_digest is sha256 of the exact original request bytes. validation_receipt is constructed by the authoritative runtime over the detached exact committed project and full configured documentation scope. Runtime pin is attested by the checksum-verifying invoking worker.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "phase",
+    "request",
+    "request_digest",
+    "validation_receipt",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adoc.migration_receipt.v0"
+    },
+    "phase": {
+      "const": "prepare"
+    },
+    "request": {
+      "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json"
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "validation_receipt": {
+      "$ref": "adoc://agent/v0/schema/adoc.validation_receipt.v0.schema.json"
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

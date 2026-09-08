@@ -462,6 +462,15 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
+    /// Prepare a full exact-commit migration receipt in an isolated worker.
+    MigrationPrepare {
+        #[arg(long)]
+        request: PathBuf,
+        #[arg(long)]
+        repository: PathBuf,
+        #[arg(long)]
+        runtime_binary_digest: String,
+    },
     /// Project an authorized retained corpus; bounded JSON on stdin and stdout.
     PortableProject,
     /// Runtime port for an explicitly authorized managed corpus; always emits retrieval JSON.

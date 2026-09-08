@@ -157,7 +157,11 @@ impl FsSourceProvider {
             SourceLoadError::unsafe_source_path(logical_path, "logical source path is not portable")
         })?;
         let text = fs::read_to_string(&physical_path).map_err(|error| {
-            SourceLoadError::unreadable(physical_path.clone(), error.to_string())
+            let diagnostic_path = match project_roots {
+                Some(_) => PathBuf::from(logical_path.as_str()),
+                None => physical_path.clone(),
+            };
+            SourceLoadError::unreadable(diagnostic_path, error.to_string())
         })?;
         Ok(SourceFile::new_with_coordinates(
             physical_path,
@@ -308,6 +312,33 @@ mod tests {
         assert_eq!(load_error.path, blocked);
         assert_eq!(load_error.kind, SourceLoadErrorKind::UnreadableDirectory);
         assert!(load_error.message.contains("permission denied"));
+    }
+
+    #[test]
+    fn unreadable_source_uses_project_logical_path_and_preserves_standalone_path() {
+        let project = tempfile::tempdir().expect("project");
+        let docs = project.path().join("docs");
+        fs::create_dir(&docs).expect("docs");
+        let source = docs.join("invalid.adoc");
+        fs::write(&source, [0xff, 0xfe]).expect("invalid UTF-8 source");
+        for (provider, expected_path) in [
+            (
+                FsSourceProvider::for_project(docs.clone(), project.path().to_path_buf(), docs),
+                PathBuf::from("docs/invalid.adoc"),
+            ),
+            (
+                FsSourceProvider::new(source.clone()),
+                source.canonicalize().expect("physical path"),
+            ),
+        ] {
+            let error = provider
+                .load_sources()
+                .pop()
+                .expect("source result")
+                .expect_err("unreadable source");
+            assert_eq!(error.kind, SourceLoadErrorKind::Unreadable);
+            assert_eq!(error.path, expected_path);
+        }
     }
 
     #[test]

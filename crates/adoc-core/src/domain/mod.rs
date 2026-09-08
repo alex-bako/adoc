@@ -49,3 +49,5 @@ pub(crate) mod source_record;
 pub(crate) mod url_safety;
 pub(crate) mod value_objects;
 pub(crate) mod values;
+
+pub(crate) mod migration;

@@ -5804,3 +5804,62 @@ fn e6_5_writeback_contract_requires_an_exact_revision_precondition() {
         "unknown operation version was accepted"
     );
 }
+
+#[test]
+fn migration_request_and_actual_receipt_match_portable_schemas() {
+    let workspace = tempfile::tempdir().unwrap();
+    let root = workspace.path();
+    write(
+        &root.join("agentdoc.config.yaml"),
+        "version: 1\nmode: strict\ndocs_path: docs\n",
+    );
+    write(
+        &root.join("docs/index.adoc"),
+        "# Migration @doc(test.page)\n\n::claim test.claim\nstatus: draft\n--\nBody.\n::\n",
+    );
+    run_git(root, &["init", "-q"]);
+    run_git(root, &["config", "user.email", "test@example.test"]);
+    run_git(root, &["config", "user.name", "Test"]);
+    run_git(root, &["add", "."]);
+    run_git(root, &["commit", "-qm", "source"]);
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    let request = json!({"schema_version":"adoc.migration_request.v0", "request_id":"r", "workspace_id":"w", "source_id":"s", "repository_identity":"repo", "revision":{"system":"git", "value":String::from_utf8(output.stdout).unwrap().trim()}, "evaluation_date":"2026-09-08"});
+    let schema_name = "adoc.migration_request.v0.schema.json";
+    assert_valid(schema_name, &request);
+    let bytes = serde_json::to_vec(&request).unwrap();
+    let receipt = adoc_local::prepare_migration(
+        root,
+        &bytes,
+        "0.4.0".into(),
+        format!("sha256:{}", "a".repeat(64)),
+    )
+    .unwrap();
+    let value: serde_json::Value =
+        serde_json::from_str(&receipt.to_canonical_json().unwrap()).unwrap();
+    assert_valid("adoc.migration_receipt.v0.schema.json", &value);
+    for (field, bad) in [
+        ("foreign", json!(true)),
+        ("revision", json!({"system":"git", "value":"HEAD"})),
+        ("revision", json!({"system":"git", "value":"0".repeat(40)})),
+        ("workspace_id", json!(" ")),
+    ] {
+        let mut invalid = request.clone();
+        invalid[field] = bad;
+        assert!(!schema_accepts(schema_name, &invalid));
+        assert!(
+            adoc_core::MigrationRequest::parse(&serde_json::to_vec(&invalid).unwrap()).is_err()
+        );
+    }
+    let mut invalid = value;
+    invalid["phase"] = json!("promote");
+    assert!(!schema_accepts(
+        "adoc.migration_receipt.v0.schema.json",
+        &invalid
+    ));
+}

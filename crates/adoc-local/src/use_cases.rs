@@ -2383,6 +2383,21 @@ fn patch_diagnostic_exit_code(diagnostic: &Diagnostic) -> Option<i32> {
     }
 }
 
+/// Local adapter for exact committed-snapshot migration preparation.
+pub fn prepare_migration(
+    repository: &Path,
+    request: &[u8],
+    runtime_version: String,
+    runtime_binary_digest: String,
+) -> Result<adoc_core::MigrationReceipt, adoc_core::MigrationError> {
+    adoc_core::prepare_migration_from_git(
+        repository,
+        request,
+        runtime_version,
+        runtime_binary_digest,
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use std::cell::RefCell;
