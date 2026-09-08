@@ -6224,3 +6224,261 @@ fn migration_initialization_cloud_records_preserve_closed_exact_evidence() {
     nested["attestation"]["verified"] = json!(true);
     assert!(!validator.is_valid(&nested));
 }
+
+#[test]
+fn migration_completion_preserves_original_bindings_and_native_correspondence() {
+    let id = "00000000-0000-4000-8000-000000000001";
+    let digest = format!("sha256:{}", "a".repeat(64));
+    let mapping = json!({
+        "object_id":"test.one","content_hash":format!("sha256:{}", "b".repeat(64)),
+        "object_source_binding":{"connector":"git","source":"docs/index.adoc","path":"docs/index.adoc","anchor":"test.one","source_revision_digest":digest},
+        "source_path":"docs/index.adoc","producer_source_record_id":"producer-record-one","producer_source_binding_id":"producer-binding-one",
+        "canonical_id":id,"version_id":id,"content_digest":digest,"source_record_id":id,"source_binding_id":id,
+        "promotion_seq":"9007199254740993","governance_event_seq":"9007199254740994","governance_event_digest":digest,
+        "effectivity_event_seq":"9007199254740995","effectivity_event_digest":digest
+    });
+    let receipt = json!({
+        "schema_version":"agentdoc.cloud.migration_completion_receipt.v0","workspace_id":id,
+        "migration_request":{"schema_version":"adoc.migration_request.v0","request_id":"original-request","workspace_id":id,"source_id":"source-one","repository_identity":"repository-one","revision":{"system":"git","value":"a".repeat(40)},"evaluation_date":"2026-09-08"},
+        "migration_request_digest":digest,"qualification_id":id,"qualification_envelope_digest":digest,
+        "qualification_receipt_digest":digest,"attestation_id":id,"attestation_digest":digest,"mappings":[mapping]
+    });
+    let name = "agentdoc.cloud.migration_completion_receipt.v0.schema.json";
+    assert_valid(name, &receipt);
+    let validator = validator_for(&schema(name));
+    // Revision is optional in the original object binding; adding it preserves validity.
+    let mut revision = receipt.clone();
+    revision["mappings"][0]["object_source_binding"]["revision"] = json!("a".repeat(40));
+    assert!(validator.is_valid(&revision));
+    for pointer in ["", "/mappings/0", "/mappings/0/object_source_binding"] {
+        for key in receipt
+            .pointer(pointer)
+            .unwrap()
+            .as_object()
+            .unwrap()
+            .keys()
+        {
+            let mut missing = receipt.clone();
+            missing
+                .pointer_mut(pointer)
+                .unwrap()
+                .as_object_mut()
+                .unwrap()
+                .remove(key);
+            assert!(!validator.is_valid(&missing), "required {pointer}/{key}");
+        }
+        let mut extra = receipt.clone();
+        extra.pointer_mut(pointer).unwrap()["activation_authority"] = json!(true);
+        assert!(!validator.is_valid(&extra), "closed {pointer}");
+    }
+    for (pointer, bad) in [
+        ("/workspace_id", json!("producer-workspace")),
+        ("/migration_request/revision/value", json!("main")),
+        ("/attestation_digest", json!("sha256:short")),
+        ("/mappings/0/content_hash", json!("sha256:legacy")),
+        ("/mappings/0/content_digest", json!("sha256:legacy")),
+        ("/mappings/0/source_record_id", json!("producer-record-one")),
+        (
+            "/mappings/0/source_binding_id",
+            json!("producer-binding-one"),
+        ),
+        ("/mappings/0/producer_source_record_id", json!(null)),
+        ("/mappings/0/producer_source_binding_id", json!("")),
+        (
+            "/mappings/0/object_source_binding/source_revision_digest",
+            json!("short"),
+        ),
+    ] {
+        let mut invalid = receipt.clone();
+        *invalid.pointer_mut(pointer).unwrap() = bad;
+        assert!(!validator.is_valid(&invalid), "reject {pointer}");
+    }
+    for path in [
+        "../secret",
+        "/absolute",
+        "C:/drive",
+        "docs\\file",
+        "docs/../file",
+        "docs/\nfile",
+    ] {
+        let mut invalid = receipt.clone();
+        invalid["mappings"][0]["source_path"] = json!(path);
+        assert!(!validator.is_valid(&invalid), "unsafe path {path:?}");
+    }
+    for field in [
+        "promotion_seq",
+        "governance_event_seq",
+        "effectivity_event_seq",
+    ] {
+        for bad in [
+            json!(1),
+            json!("0"),
+            json!("01"),
+            json!("-1"),
+            json!("1.5"),
+            json!(null),
+        ] {
+            let mut invalid = receipt.clone();
+            invalid["mappings"][0][field] = bad;
+            assert!(!validator.is_valid(&invalid), "sequence {field}");
+        }
+    }
+    for mappings in [json!([]), json!([mapping, mapping])] {
+        let mut invalid = receipt.clone();
+        invalid["mappings"] = mappings;
+        assert!(!validator.is_valid(&invalid));
+    }
+    let mut boundary = receipt.clone();
+    boundary["mappings"] = json!(
+        (0..512)
+            .map(|i| {
+                let mut entry = mapping.clone();
+                entry["object_id"] = json!(format!("test.{i:03}"));
+                entry
+            })
+            .collect::<Vec<_>>()
+    );
+    assert!(validator.is_valid(&boundary));
+    let mut extra = mapping.clone();
+    extra["object_id"] = json!("test.extra");
+    boundary["mappings"].as_array_mut().unwrap().push(extra);
+    assert!(!validator.is_valid(&boundary));
+    // The E4.4 pass-through receipt remains a separate contract.
+    assert_valid(
+        "agentdoc.cloud.migration_receipt.v0.schema.json",
+        &json!({"schema_version":"agentdoc.cloud.migration_receipt.v0","payload":{"legacy":true}}),
+    );
+}
+
+#[test]
+fn migration_native_facts_are_closed_nonnullable_and_preserve_sequence_precision() {
+    let id = "00000000-0000-4000-8000-000000000001";
+    let digest = format!("sha256:{}", "a".repeat(64));
+    let source = json!({"path":"docs/index.adoc","source_record_id":id,"source_binding_id":id});
+    let candidate = json!({"object_id":"test.one","canonical_id":id,"version_id":id,"source_record_id":id,"source_binding_id":id});
+    let import = json!({"schema_version":"agentdoc.cloud.migration_import_result.v0","request_id":"external-request","candidates":[candidate]});
+    let qualification = json!({"schema_version":"agentdoc.cloud.migration_qualification_result.v0","request_id":"external-request","qualification_id":id,"outcome":"evaluated","candidates":[candidate],"sources":[source]});
+    let cases = [
+        (
+            "migration_candidate_import",
+            json!({"workspace_id":id,"request_id":"external-request","request_digest":digest,"admission_digest":digest,"principal":id,"result":import,"created_at":"2026-09-08T14:23:01.123456+00:00"}),
+        ),
+        (
+            "migration_qualification",
+            json!({"workspace_id":id,"id":id,"request_id":"external-request","principal":id,"admission_digest":digest,"envelope_digest":digest,"outcome":"evaluated","qualification_policy_version":"1","result":qualification,"created_at":"2026-09-08T14:23:01Z"}),
+        ),
+        (
+            "migration_qualification_source",
+            json!({"workspace_id":id,"qualification_id":id,"path":"docs/index.adoc","source_record_id":id,"source_binding_id":id}),
+        ),
+        (
+            "migration_initialization",
+            json!({"workspace_id":id,"id":id,"qualification_id":id,"request_id":id,"request_digest":digest,"principal":id,"identity_session_id":id,"auth_session_id":id,"external_identity_link_id":id,"authorization_decision_id":id,"attestation_digest":digest}),
+        ),
+        (
+            "migration_initialization_target",
+            json!({"workspace_id":id,"initialization_id":id,"object_id":"test.one","canonical_id":id,"version_id":id,"content_hash":digest,"content_digest":digest,"source_record_id":id,"source_binding_id":id,"promotion_seq":"9007199254740993","governance_event_seq":"9007199254740994","effectivity_event_seq":"9007199254740995"}),
+        ),
+    ];
+    let name = "agentdoc.cloud.export_native_fact.v0.schema.json";
+    let validator = validator_for(&schema(name));
+    for (kind, record) in cases {
+        let value = json!({"schema_version":"agentdoc.cloud.export_native_fact.v0","kind":kind,"record":record});
+        assert_valid(name, &value);
+        for key in record.as_object().unwrap().keys() {
+            let mut missing = value.clone();
+            missing["record"].as_object_mut().unwrap().remove(key);
+            assert!(!validator.is_valid(&missing), "{kind} requires {key}");
+            let mut null = value.clone();
+            null["record"][key] = json!(null);
+            assert!(!validator.is_valid(&null), "{kind} nonnull {key}");
+            if key.ends_with("_seq") {
+                for bad in [json!(1), json!("0"), json!("01")] {
+                    let mut invalid = value.clone();
+                    invalid["record"][key] = bad;
+                    assert!(!validator.is_valid(&invalid), "{kind} decimal {key}");
+                }
+            }
+        }
+        for pointer in ["", "/record"] {
+            let mut extra = value.clone();
+            extra.pointer_mut(pointer).unwrap()["raw_source_bytes"] = json!("payload");
+            assert!(!validator.is_valid(&extra), "{kind} closed {pointer}");
+        }
+        let mut invalid = value.clone();
+        invalid["record"]["workspace_id"] = json!("external-workspace");
+        assert!(!validator.is_valid(&invalid));
+        if kind == "migration_qualification" {
+            let mut flagged = value.clone();
+            flagged["record"]["outcome"] = json!("flagged_source_evidence");
+            flagged["record"]["result"]["outcome"] = json!("flagged_source_evidence");
+            flagged["record"]["result"]["candidates"] = json!([]);
+            assert!(validator.is_valid(&flagged));
+            flagged["record"]["qualification_policy_version"] = json!("2");
+            assert!(!validator.is_valid(&flagged));
+        }
+        if kind == "migration_initialization" {
+            invalid = value.clone();
+            invalid["record"]["request_id"] = json!("external-request");
+            assert!(!validator.is_valid(&invalid));
+        }
+    }
+}
+
+#[test]
+fn migration_export_actual_native_outputs_match_published_contracts() {
+    // Unmodified JSON values from real pinned-runtime and human-authorized Cloud
+    // exports. This checks wire shape, not native authorization or causal joins.
+    let records: Vec<serde_json::Value> =
+        serde_json::from_str(include_str!("fixtures/migration-export-native.json")).unwrap();
+    let mut kinds = BTreeSet::new();
+    let mut outcomes = BTreeSet::new();
+    let mut completion_count = 0;
+    for record in &records {
+        let version = record["schema_version"].as_str().unwrap();
+        assert_valid(&format!("{version}.schema.json"), record);
+        if version == "agentdoc.cloud.export_native_fact.v0" {
+            kinds.insert(record["kind"].as_str().unwrap());
+            if record["kind"] == "migration_qualification" {
+                outcomes.insert(record["record"]["outcome"].as_str().unwrap());
+            }
+        } else {
+            assert_eq!(version, "agentdoc.cloud.migration_completion_receipt.v0");
+            completion_count += 1;
+            let mappings = record["mappings"].as_array().unwrap();
+            assert_eq!(mappings.len(), 2);
+            for mapping in mappings {
+                assert_ne!(mapping["content_hash"], mapping["content_digest"]);
+                assert_ne!(
+                    mapping["producer_source_record_id"],
+                    mapping["source_record_id"]
+                );
+                assert_ne!(
+                    mapping["producer_source_binding_id"],
+                    mapping["source_binding_id"]
+                );
+                assert_eq!(
+                    mapping["object_source_binding"]["anchor"],
+                    mapping["object_id"]
+                );
+                assert_eq!(mapping["object_source_binding"]["connector"], "local_fs");
+                assert!(mapping["object_source_binding"].get("revision").is_none());
+            }
+        }
+    }
+    assert_eq!(completion_count, 1);
+    assert_eq!(
+        kinds,
+        BTreeSet::from([
+            "migration_candidate_import",
+            "migration_qualification",
+            "migration_qualification_source",
+            "migration_initialization",
+            "migration_initialization_target",
+        ])
+    );
+    assert_eq!(
+        outcomes,
+        BTreeSet::from(["evaluated", "flagged_source_evidence"])
+    );
+}

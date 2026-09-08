@@ -743,6 +743,16 @@ const RESOURCES: &[AgentResource] = &[
         ),
     },
     AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_completion_receipt.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration-completion-receipt-v0-json",
+        title: "Migration Completion Receipt JSON Schema",
+        description: "Closed Cloud-owned portable migration correspondence; no activation authority.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_completion_receipt.v0.schema.json"
+        ),
+    },
+    AgentResource {
         uri: "adoc://agent/v0/schema/adoc.migration_qualification.v0.schema.json",
         name: "schema-adoc-migration_qualification-v0-json",
         title: "Migration Qualification Contract JSON Schema",

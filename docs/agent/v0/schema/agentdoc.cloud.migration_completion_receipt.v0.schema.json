@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/agentdoc.cloud.migration_completion_receipt.v0.schema.json",
+  "title": "AgentDoc Cloud Migration Completion Receipt",
+  "description": "Cloud-owned portable correspondence reconstructed from immutable migration, qualification, human attestation and native promotion evidence. Original semantic hashes, producer identities and object Source Bindings remain distinct from native content digests and file-level Source Bindings. Native export enforces exact sorted eligible target coverage and causal joins. This generated record is not an original retained byte attestation, a signature, or authority to activate knowledge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "workspace_id",
+    "migration_request",
+    "migration_request_digest",
+    "qualification_id",
+    "qualification_envelope_digest",
+    "qualification_receipt_digest",
+    "attestation_id",
+    "attestation_digest",
+    "mappings"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "agentdoc.cloud.migration_completion_receipt.v0"
+    },
+    "workspace_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "migration_request": {
+      "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json"
+    },
+    "migration_request_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "qualification_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "qualification_envelope_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "qualification_receipt_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "attestation_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "attestation_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "mappings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "object_id",
+          "content_hash",
+          "object_source_binding",
+          "source_path",
+          "producer_source_record_id",
+          "producer_source_binding_id",
+          "canonical_id",
+          "version_id",
+          "content_digest",
+          "source_record_id",
+          "source_binding_id",
+          "promotion_seq",
+          "governance_event_seq",
+          "governance_event_digest",
+          "effectivity_event_seq",
+          "effectivity_event_digest"
+        ],
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "content_hash": {
+            "$ref": "adoc://agent/v0/schema/adoc.migration_qualification_receipt.v0.schema.json#/properties/objects/items/properties/content_hash"
+          },
+          "object_source_binding": {
+            "$ref": "adoc://agent/v0/schema/adoc.source_binding.v0.schema.json#/properties/binding"
+          },
+          "source_path": {
+            "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_import_job.v0.schema.json#/properties/sources/items/properties/path"
+          },
+          "producer_source_record_id": {
+            "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_import_job.v0.schema.json#/properties/sources/items/properties/source_record_id"
+          },
+          "producer_source_binding_id": {
+            "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_import_job.v0.schema.json#/properties/sources/items/properties/source_binding_id"
+          },
+          "canonical_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "version_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "content_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "source_record_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "source_binding_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "promotion_seq": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          },
+          "governance_event_seq": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          },
+          "governance_event_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "effectivity_event_seq": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          },
+          "effectivity_event_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

@@ -188,6 +188,7 @@ The 13 `agentdoc.cloud.*` rows below whose owning slice is E5 also inventory imp
 | `agentdoc.cloud.migration_initialization_request.v0` | cloud | E7.1.T4 | closed authenticated human command binding exact qualification and explicit acceptance meaning/rationale; native complete eligible-set and current migration.approve checks; schema and MCP resource published |
 | `agentdoc.cloud.migration_initialization_attestation.v0` | cloud | E7.1.T4 | immutable exact-command/qualification/human/session/authorization attestation; canonical native JSON plus newline defines digest; no verification assertion; schema and MCP resource published |
 | `agentdoc.cloud.migration_initialization_result.v0` | cloud | E7.1.T4 | retained attestation plus sorted native promotion/governance/initial-effectivity references preserving original Object ID and semantic hash; decimal sequence strings; native identity joins and authorization remain required; complete portable receipt and cutover remain downstream; schema and MCP resource published |
+| `agentdoc.cloud.migration_completion_receipt.v0` | cloud | E7.1.T5 | generated portable correspondence joining original request, qualification, human attestation and native promotion/governance/effectivity evidence; preserves original object bindings and semantic hashes; closed schema and MCP resource published; no activation authority |
 <!-- /registry:envelopes-planned -->
 
 ## Diagnostic Codes — shipped, owner `adoc`

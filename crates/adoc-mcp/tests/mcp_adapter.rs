@@ -403,6 +403,7 @@ fn lists_and_reads_all_stable_agent_resources() {
         "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_request.v0.schema.json",
         "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_attestation.v0.schema.json",
         "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_result.v0.schema.json",
+        "adoc://agent/v0/schema/agentdoc.cloud.migration_completion_receipt.v0.schema.json",
         "adoc://agent/v0/schema/adoc.migration_qualification.v0.schema.json",
         "adoc://agent/v0/schema/adoc.migration_qualification_receipt.v0.schema.json",
         "adoc://agent/v0/schema/agentdoc.cloud.migration_qualification_result.v0.schema.json",

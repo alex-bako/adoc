@@ -1,0 +1,372 @@
+[
+  {
+    "kind": "migration_candidate_import",
+    "record": {
+      "admission_digest": "sha256:30e713a8acac8fb55329f137b8d210950bbaf371a9674d699db8e1cd4d9bec35",
+      "created_at": "2026-09-08T16:48:36.658605+00:00",
+      "principal": "d2b8a790-f164-4fc0-bc54-6607417f0459",
+      "request_digest": "sha256:8a42e93cdaddade6f472186666bcf688a766cbe297474d0f1456a9e74946a714",
+      "request_id": "4b2014cc-0a71-4a66-8fab-c09f8773cf2d",
+      "result": {
+        "candidates": [
+          {
+            "canonical_id": "53ead8ec-c56b-4655-9402-f7d3c0a4cfcd",
+            "object_id": "test.draft",
+            "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+            "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80",
+            "version_id": "7112136d-896e-4c31-b81b-c33be8a9200a"
+          },
+          {
+            "canonical_id": "c8e29430-bad6-4368-b5e8-16c4172d5649",
+            "object_id": "test.one",
+            "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+            "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80",
+            "version_id": "a793e710-9ed0-40ed-a497-a12c4492b1e9"
+          },
+          {
+            "canonical_id": "6c67b471-731a-4896-bec8-3a61b524fd6c",
+            "object_id": "test.two",
+            "source_binding_id": "71414087-951e-43f8-98cd-457a442ccffe",
+            "source_record_id": "24ce5308-9787-4401-8616-c860d9277e08",
+            "version_id": "42b2fa92-93db-4ee9-8983-7334dc006ceb"
+          }
+        ],
+        "request_id": "4b2014cc-0a71-4a66-8fab-c09f8773cf2d",
+        "schema_version": "agentdoc.cloud.migration_import_result.v0"
+      },
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "attestation_digest": "sha256:6df17aab1282ae75a32c802cbf42ad3f6b8514584b494c71f5f543d5ea534453",
+    "attestation_id": "78a3f637-8612-473b-8366-058613418c41",
+    "mappings": [
+      {
+        "canonical_id": "c8e29430-bad6-4368-b5e8-16c4172d5649",
+        "content_digest": "sha256:a28a29ac9736ada50350371ebc083e225eedee633514729b7d133b8ed582e92b",
+        "content_hash": "sha256:15131eab290b9723c73ba28126e1efa5370cb5655095b4f0c36841d722ca74eb",
+        "effectivity_event_digest": "sha256:80396fceac9ac8f7a2f0835a9b036ae1ce83d2a120cd90fd9f32d27e68e1f87b",
+        "effectivity_event_seq": "10",
+        "governance_event_digest": "sha256:362f6701553aac6362ff3b768001747ec9212d754757208ad3b17c93888d197e",
+        "governance_event_seq": "9",
+        "object_id": "test.one",
+        "object_source_binding": {
+          "anchor": "test.one",
+          "connector": "local_fs",
+          "path": "docs/index.adoc",
+          "source": "test.one.page",
+          "source_revision_digest": "sha256:7ddcc1f866cca6ac550f938622aad45d19f30e25b2ef3dea703cb8d99f48b7ac"
+        },
+        "producer_source_binding_id": "a9a81008-93f1-4ccd-81fc-673a83babec6",
+        "producer_source_record_id": "a04cc2f5-36a7-4d6f-8444-6239b744a9b2",
+        "promotion_seq": "5",
+        "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+        "source_path": "docs/index.adoc",
+        "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80",
+        "version_id": "a793e710-9ed0-40ed-a497-a12c4492b1e9"
+      },
+      {
+        "canonical_id": "6c67b471-731a-4896-bec8-3a61b524fd6c",
+        "content_digest": "sha256:717a710708ec0d0ebf4c3594a6fa5c51e56bb98f1b473ca80acf7310dfd4bf61",
+        "content_hash": "sha256:15131eab290b9723c73ba28126e1efa5370cb5655095b4f0c36841d722ca74eb",
+        "effectivity_event_digest": "sha256:c1390ede69c78f778a6392619c768deb90a218e11bc50ebce0e1935f767d2be5",
+        "effectivity_event_seq": "12",
+        "governance_event_digest": "sha256:b7d21f02bccdc2832fde57aa86fab3e1bb2a87884b230ca3714fa73894b8248c",
+        "governance_event_seq": "11",
+        "object_id": "test.two",
+        "object_source_binding": {
+          "anchor": "test.two",
+          "connector": "local_fs",
+          "path": "docs/second.adoc",
+          "source": "test.two.page",
+          "source_revision_digest": "sha256:353b34899e2a81c4c92788cd7a7a8a6c1b9277dd8e294b4a5fd609a475047bc5"
+        },
+        "producer_source_binding_id": "198271a1-b782-44d5-b48c-ee7a7448dcd0",
+        "producer_source_record_id": "db0d9d54-478b-4650-8334-d182bbcfbdf9",
+        "promotion_seq": "6",
+        "source_binding_id": "71414087-951e-43f8-98cd-457a442ccffe",
+        "source_path": "docs/second.adoc",
+        "source_record_id": "24ce5308-9787-4401-8616-c860d9277e08",
+        "version_id": "42b2fa92-93db-4ee9-8983-7334dc006ceb"
+      }
+    ],
+    "migration_request": {
+      "evaluation_date": "2026-09-08",
+      "repository_identity": "repository-1",
+      "request_id": "4b2014cc-0a71-4a66-8fab-c09f8773cf2d",
+      "revision": {
+        "system": "git",
+        "value": "408f52e59957018e866b30aef343925f8d9d7572"
+      },
+      "schema_version": "adoc.migration_request.v0",
+      "source_id": "source-1",
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "migration_request_digest": "sha256:8a42e93cdaddade6f472186666bcf688a766cbe297474d0f1456a9e74946a714",
+    "qualification_envelope_digest": "sha256:587865827d354ecd010d3c6d33de792f6a430081b04a9f7e9afdcd5eba620ed2",
+    "qualification_id": "730b85d3-42e0-466d-88c4-72a43c8a6c93",
+    "qualification_receipt_digest": "sha256:1964592a9bcf89665618b5977e280b3ebb884f5d26e8cc560ab575434baaf93f",
+    "schema_version": "agentdoc.cloud.migration_completion_receipt.v0",
+    "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+  },
+  {
+    "kind": "migration_initialization",
+    "record": {
+      "attestation_digest": "sha256:6df17aab1282ae75a32c802cbf42ad3f6b8514584b494c71f5f543d5ea534453",
+      "auth_session_id": "526ccb26-1d42-49d7-905f-9a23ec1bea97",
+      "authorization_decision_id": "304a1775-d54a-4c96-897a-24def0df2da8",
+      "external_identity_link_id": "b9f002b2-23f3-49c9-a113-f8a2257d1422",
+      "id": "78a3f637-8612-473b-8366-058613418c41",
+      "identity_session_id": "e8d50a4b-e85e-40da-8f17-a5a903d0c070",
+      "principal": "a7b0a559-effd-4894-8f93-f2eec2004ec6",
+      "qualification_id": "730b85d3-42e0-466d-88c4-72a43c8a6c93",
+      "request_digest": "sha256:1e70387b654f95ddd0e4358b2ef0f6ef47054195889689828e644a637eba41ce",
+      "request_id": "3ea75949-b8f4-43af-b053-8741379bda7e",
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_initialization_target",
+    "record": {
+      "canonical_id": "c8e29430-bad6-4368-b5e8-16c4172d5649",
+      "content_digest": "sha256:a28a29ac9736ada50350371ebc083e225eedee633514729b7d133b8ed582e92b",
+      "content_hash": "sha256:15131eab290b9723c73ba28126e1efa5370cb5655095b4f0c36841d722ca74eb",
+      "effectivity_event_seq": "10",
+      "governance_event_seq": "9",
+      "initialization_id": "78a3f637-8612-473b-8366-058613418c41",
+      "object_id": "test.one",
+      "promotion_seq": "5",
+      "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+      "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80",
+      "version_id": "a793e710-9ed0-40ed-a497-a12c4492b1e9",
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_initialization_target",
+    "record": {
+      "canonical_id": "6c67b471-731a-4896-bec8-3a61b524fd6c",
+      "content_digest": "sha256:717a710708ec0d0ebf4c3594a6fa5c51e56bb98f1b473ca80acf7310dfd4bf61",
+      "content_hash": "sha256:15131eab290b9723c73ba28126e1efa5370cb5655095b4f0c36841d722ca74eb",
+      "effectivity_event_seq": "12",
+      "governance_event_seq": "11",
+      "initialization_id": "78a3f637-8612-473b-8366-058613418c41",
+      "object_id": "test.two",
+      "promotion_seq": "6",
+      "source_binding_id": "71414087-951e-43f8-98cd-457a442ccffe",
+      "source_record_id": "24ce5308-9787-4401-8616-c860d9277e08",
+      "version_id": "42b2fa92-93db-4ee9-8983-7334dc006ceb",
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification",
+    "record": {
+      "admission_digest": "sha256:c7ef268d0a78446a8f39dec32390b8a4e41d698b1d0a45c7a1dbb42cdcb58470",
+      "created_at": "2026-09-08T16:48:36.658605+00:00",
+      "envelope_digest": "sha256:587865827d354ecd010d3c6d33de792f6a430081b04a9f7e9afdcd5eba620ed2",
+      "id": "730b85d3-42e0-466d-88c4-72a43c8a6c93",
+      "outcome": "evaluated",
+      "principal": "d2b8a790-f164-4fc0-bc54-6607417f0459",
+      "qualification_policy_version": "1",
+      "request_id": "4b2014cc-0a71-4a66-8fab-c09f8773cf2d",
+      "result": {
+        "candidates": [
+          {
+            "canonical_id": "53ead8ec-c56b-4655-9402-f7d3c0a4cfcd",
+            "object_id": "test.draft",
+            "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+            "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80",
+            "version_id": "7112136d-896e-4c31-b81b-c33be8a9200a"
+          },
+          {
+            "canonical_id": "c8e29430-bad6-4368-b5e8-16c4172d5649",
+            "object_id": "test.one",
+            "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+            "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80",
+            "version_id": "a793e710-9ed0-40ed-a497-a12c4492b1e9"
+          },
+          {
+            "canonical_id": "6c67b471-731a-4896-bec8-3a61b524fd6c",
+            "object_id": "test.two",
+            "source_binding_id": "71414087-951e-43f8-98cd-457a442ccffe",
+            "source_record_id": "24ce5308-9787-4401-8616-c860d9277e08",
+            "version_id": "42b2fa92-93db-4ee9-8983-7334dc006ceb"
+          }
+        ],
+        "outcome": "evaluated",
+        "qualification_id": "730b85d3-42e0-466d-88c4-72a43c8a6c93",
+        "request_id": "4b2014cc-0a71-4a66-8fab-c09f8773cf2d",
+        "schema_version": "agentdoc.cloud.migration_qualification_result.v0",
+        "sources": [
+          {
+            "path": "docs/context.adoc",
+            "source_binding_id": "2c19992e-0f54-4c25-bc5a-7f777403f394",
+            "source_record_id": "b932e01f-f952-4546-850a-339bc662f1e2"
+          },
+          {
+            "path": "docs/index.adoc",
+            "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+            "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80"
+          },
+          {
+            "path": "docs/second.adoc",
+            "source_binding_id": "71414087-951e-43f8-98cd-457a442ccffe",
+            "source_record_id": "24ce5308-9787-4401-8616-c860d9277e08"
+          }
+        ]
+      },
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification_source",
+    "record": {
+      "path": "docs/context.adoc",
+      "qualification_id": "730b85d3-42e0-466d-88c4-72a43c8a6c93",
+      "source_binding_id": "2c19992e-0f54-4c25-bc5a-7f777403f394",
+      "source_record_id": "b932e01f-f952-4546-850a-339bc662f1e2",
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification_source",
+    "record": {
+      "path": "docs/index.adoc",
+      "qualification_id": "730b85d3-42e0-466d-88c4-72a43c8a6c93",
+      "source_binding_id": "49f3fe9c-cd02-4a63-90dd-c698bb6d677f",
+      "source_record_id": "f5050829-4e01-4ba0-89e3-6ec7717eac80",
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification_source",
+    "record": {
+      "path": "docs/second.adoc",
+      "qualification_id": "730b85d3-42e0-466d-88c4-72a43c8a6c93",
+      "source_binding_id": "71414087-951e-43f8-98cd-457a442ccffe",
+      "source_record_id": "24ce5308-9787-4401-8616-c860d9277e08",
+      "workspace_id": "62e23863-4881-4a19-a257-58c579e2be52"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification",
+    "record": {
+      "admission_digest": "sha256:b46ac1866b61dfc1b91173eef261285ce17c2fab021e092863d4851dba85921d",
+      "created_at": "2026-09-08T16:48:56.074537+00:00",
+      "envelope_digest": "sha256:8204394bc12c46a66f19214aa37f1131d4ed88b83b7aeafe6bcb39161eacd0a8",
+      "id": "0d22b0d5-1476-4e93-b5d7-025dd7ef0e94",
+      "outcome": "flagged_source_evidence",
+      "principal": "aed78cc8-4bef-4854-9c5f-a33f56691cce",
+      "qualification_policy_version": "1",
+      "request_id": "b1e8f8a0-9cb0-4288-82a6-fc3ebe223795",
+      "result": {
+        "candidates": [],
+        "outcome": "flagged_source_evidence",
+        "qualification_id": "0d22b0d5-1476-4e93-b5d7-025dd7ef0e94",
+        "request_id": "b1e8f8a0-9cb0-4288-82a6-fc3ebe223795",
+        "schema_version": "agentdoc.cloud.migration_qualification_result.v0",
+        "sources": [
+          {
+            "path": "docs/index.adoc",
+            "source_binding_id": "55a89479-d184-4b9a-a7c5-e1c29ed1e473",
+            "source_record_id": "519f9e4c-da0c-4c5a-9570-fb8f97c9f3e9"
+          },
+          {
+            "path": "docs/second.adoc",
+            "source_binding_id": "1d851b1b-9cad-4567-8d7a-31c462427bca",
+            "source_record_id": "331ff4ef-d673-47b7-81d1-a33761c32b79"
+          }
+        ]
+      },
+      "workspace_id": "cad3a377-bc49-4179-9b45-e26d811bd9c9"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification_source",
+    "record": {
+      "path": "docs/index.adoc",
+      "qualification_id": "0d22b0d5-1476-4e93-b5d7-025dd7ef0e94",
+      "source_binding_id": "55a89479-d184-4b9a-a7c5-e1c29ed1e473",
+      "source_record_id": "519f9e4c-da0c-4c5a-9570-fb8f97c9f3e9",
+      "workspace_id": "cad3a377-bc49-4179-9b45-e26d811bd9c9"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification_source",
+    "record": {
+      "path": "docs/second.adoc",
+      "qualification_id": "0d22b0d5-1476-4e93-b5d7-025dd7ef0e94",
+      "source_binding_id": "1d851b1b-9cad-4567-8d7a-31c462427bca",
+      "source_record_id": "331ff4ef-d673-47b7-81d1-a33761c32b79",
+      "workspace_id": "cad3a377-bc49-4179-9b45-e26d811bd9c9"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification",
+    "record": {
+      "admission_digest": "sha256:7ff739e643d229db16776193c0276d9b939e55eac6f245ac21c0d32052bc7688",
+      "created_at": "2026-09-08T16:48:57.934457+00:00",
+      "envelope_digest": "sha256:fe387b653e1455788d8a6dc418f26e0509d02a4fee1ebc3f9ed9dfec1ebc55ad",
+      "id": "28cfbfd9-ce28-45a8-a2bf-3ea5c7aff88c",
+      "outcome": "flagged_source_evidence",
+      "principal": "82c31f38-6314-41d1-8edc-8d361629366a",
+      "qualification_policy_version": "1",
+      "request_id": "2300498a-268a-4f13-9fc8-1eadf548a05b",
+      "result": {
+        "candidates": [],
+        "outcome": "flagged_source_evidence",
+        "qualification_id": "28cfbfd9-ce28-45a8-a2bf-3ea5c7aff88c",
+        "request_id": "2300498a-268a-4f13-9fc8-1eadf548a05b",
+        "schema_version": "agentdoc.cloud.migration_qualification_result.v0",
+        "sources": [
+          {
+            "path": "docs/index.adoc",
+            "source_binding_id": "4e7f616b-b81d-4c16-b3b3-6c1552efaadc",
+            "source_record_id": "5efe142d-f57b-4bc8-ad12-c9b0c6df4f01"
+          },
+          {
+            "path": "docs/second.adoc",
+            "source_binding_id": "a6edc2bc-dc41-4ba5-b535-398a83e70207",
+            "source_record_id": "c4df032c-0f44-46c1-b1f9-996b7efc6b87"
+          }
+        ]
+      },
+      "workspace_id": "ca0d9106-fda3-45aa-b71c-3c8933edc74d"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification_source",
+    "record": {
+      "path": "docs/index.adoc",
+      "qualification_id": "28cfbfd9-ce28-45a8-a2bf-3ea5c7aff88c",
+      "source_binding_id": "4e7f616b-b81d-4c16-b3b3-6c1552efaadc",
+      "source_record_id": "5efe142d-f57b-4bc8-ad12-c9b0c6df4f01",
+      "workspace_id": "ca0d9106-fda3-45aa-b71c-3c8933edc74d"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_qualification_source",
+    "record": {
+      "path": "docs/second.adoc",
+      "qualification_id": "28cfbfd9-ce28-45a8-a2bf-3ea5c7aff88c",
+      "source_binding_id": "a6edc2bc-dc41-4ba5-b535-398a83e70207",
+      "source_record_id": "c4df032c-0f44-46c1-b1f9-996b7efc6b87",
+      "workspace_id": "ca0d9106-fda3-45aa-b71c-3c8933edc74d"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  }
+]
