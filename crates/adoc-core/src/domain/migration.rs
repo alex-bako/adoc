@@ -27,6 +27,8 @@ pub(crate) struct MigrationRevision {
 }
 #[derive(Debug, Error)]
 pub enum MigrationError {
+    #[error("unsupported migration qualification policy version")]
+    UnsupportedQualificationPolicy,
     #[error("migration import job is invalid")]
     InvalidJob,
     #[error("migration source validation failed")]
@@ -47,6 +49,7 @@ pub enum MigrationError {
 impl MigrationError {
     pub fn diagnostic_code(&self) -> DiagnosticCode {
         match self {
+            Self::UnsupportedQualificationPolicy => DiagnosticCode::SchemaUnsupportedVersion,
             Self::InvalidJob => DiagnosticCode::MigrationInvalidJob,
             Self::ValidationFailed => DiagnosticCode::MigrationValidationFailed,
             Self::OutputLimit => DiagnosticCode::MigrationOutputLimit,

@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/adoc.migration_qualification_receipt.v0.schema.json",
+  "title": "AgentDoc Migration Qualification Receipt",
+  "description": "Adoc-only deterministic policy1 evidence over full validated snapshot. Reasons ordered lifecycle_not_adopted, stale, review_overdue, contradicted, unresolved_evidence; reference IDs and diagnostic codes sorted unique. Objects sorted by original Object ID. Original object source binding differs from job file-level SourceRecord/Binding IDs. Positive predicate is existing mapping1 approved/effective with no disqualifying facts; no attestation or promotion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_digest",
+    "job_digest",
+    "candidate_bundle_digest",
+    "graph_artifact_digest",
+    "config_digest",
+    "evaluation_date",
+    "qualification_policy_version",
+    "lifecycle_mapping_version",
+    "objects"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adoc.migration_qualification_receipt.v0"
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "job_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "candidate_bundle_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "graph_artifact_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "evaluation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "qualification_policy_version": {
+      "const": "1"
+    },
+    "lifecycle_mapping_version": {
+      "const": "1"
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "object_id",
+          "content_hash",
+          "source_path",
+          "object_source_binding",
+          "source_record_id",
+          "source_binding_id",
+          "eligible",
+          "reasons"
+        ],
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "source_path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^\\u0000-\\u001f]+$"
+          },
+          "object_source_binding": {
+            "$ref": "adoc://agent/v0/schema/adoc.source_binding.v0.schema.json#/properties/binding"
+          },
+          "source_record_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_binding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "reasons": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "code",
+                "related_object_ids",
+                "diagnostic_codes"
+              ],
+              "properties": {
+                "code": {
+                  "enum": [
+                    "lifecycle_not_adopted",
+                    "stale",
+                    "review_overdue",
+                    "contradicted",
+                    "unresolved_evidence"
+                  ]
+                },
+                "related_object_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                },
+                "diagnostic_codes": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "evidence.hash_drift",
+                      "evidence.hash_target_missing",
+                      "evidence.hash_invalid",
+                      "evidence.hash_unverifiable"
+                    ]
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

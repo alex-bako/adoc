@@ -68,6 +68,19 @@ fn run(arguments: impl IntoIterator<Item = String>) -> i32 {
                 return 2;
             }
             match cli.command {
+                Commands::MigrationQualify {
+                    request,
+                    job,
+                    qualification_policy_version,
+                    repository,
+                    runtime_binary_digest,
+                } => commands::migration_qualify(
+                    request,
+                    job,
+                    qualification_policy_version,
+                    repository,
+                    runtime_binary_digest,
+                ),
                 Commands::MigrationImport {
                     request,
                     job,

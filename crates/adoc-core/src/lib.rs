@@ -1133,6 +1133,40 @@ pub fn import_migration_from_git(
     )
 }
 
+pub use application::migration::MigrationQualification;
+pub use domain::migration_qualification::{
+    MIGRATION_QUALIFICATION_POLICY_VERSION, MIGRATION_QUALIFICATION_RECEIPT_SCHEMA_VERSION,
+    MIGRATION_QUALIFICATION_SCHEMA_VERSION,
+};
+
+/// Qualify actual validated exact-snapshot candidates or retain failed source evidence.
+/// The caller owns the isolated, network-denied execution boundary.
+pub fn qualify_migration_from_git(
+    repository: &std::path::Path,
+    request_bytes: &[u8],
+    job_bytes: &[u8],
+    policy_version: &str,
+    runtime_version: String,
+    runtime_binary_digest: String,
+) -> Result<MigrationQualification, MigrationError> {
+    domain::migration_qualification::require_policy(policy_version)?;
+    let request = MigrationRequest::parse(request_bytes)?;
+    domain::migration::MigrationImportJob::parse(job_bytes, &request)?;
+    let provider = infrastructure::git::worktree::GitWorktreeProvider::for_migration(
+        repository,
+        &request.revision.value,
+    )?;
+    application::migration::qualify_with_provider(
+        request_bytes,
+        job_bytes,
+        policy_version,
+        &provider,
+        resolve_migration_target,
+        runtime_version,
+        runtime_binary_digest,
+    )
+}
+
 fn resolve_migration_target(
     snapshot: &std::path::Path,
 ) -> Result<application::migration::MigrationValidationTarget, MigrationError> {

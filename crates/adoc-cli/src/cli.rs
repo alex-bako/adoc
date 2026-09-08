@@ -462,6 +462,19 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
+    /// Evaluate versioned migration eligibility or retain failed source evidence.
+    MigrationQualify {
+        #[arg(long)]
+        request: PathBuf,
+        #[arg(long)]
+        job: PathBuf,
+        #[arg(long)]
+        qualification_policy_version: String,
+        #[arg(long)]
+        repository: PathBuf,
+        #[arg(long)]
+        runtime_binary_digest: String,
+    },
     /// Export exact-snapshot source evidence and inactive candidate inputs.
     MigrationImport {
         #[arg(long)]

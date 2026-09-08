@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/adoc.migration_qualification.v0.schema.json",
+  "title": "AgentDoc Migration Qualification",
+  "description": "Actual-runtime output capped at 8 MiB encoded UTF8. Evaluated preserves exact T2 candidate bytes; flagged source evidence preserves raw bytes and failed diagnostics without graph or managed versions. Eligibility grants no authority. Each flagged SourceRecord v1 and SourceBinding v0 binds exact decoded bytes; diagnostics_bytes hashes to the actual failed validation receipt.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "request",
+        "request_digest",
+        "job_digest",
+        "qualification_policy_version",
+        "config_bytes",
+        "outcome",
+        "candidate_bundle_bytes",
+        "qualification_receipt_bytes"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "adoc.migration_qualification.v0"
+        },
+        "request": {
+          "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json"
+        },
+        "request_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "job_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "qualification_policy_version": {
+          "const": "1"
+        },
+        "config_bytes": {
+          "type": "string"
+        },
+        "outcome": {
+          "const": "evaluated"
+        },
+        "candidate_bundle_bytes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "qualification_receipt_bytes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "request",
+        "request_digest",
+        "job_digest",
+        "qualification_policy_version",
+        "config_bytes",
+        "outcome",
+        "validation_receipt_bytes",
+        "diagnostics_bytes",
+        "sources"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "adoc.migration_qualification.v0"
+        },
+        "request": {
+          "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json"
+        },
+        "request_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "job_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "qualification_policy_version": {
+          "const": "1"
+        },
+        "config_bytes": {
+          "type": "string"
+        },
+        "outcome": {
+          "const": "flagged_source_evidence"
+        },
+        "validation_receipt_bytes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "diagnostics_bytes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "source_bytes_base64",
+              "source_record_bytes",
+              "source_binding_bytes"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^\\u0000-\\u001f]+$"
+              },
+              "source_bytes_base64": {
+                "type": "string",
+                "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+              },
+              "source_record_bytes": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_binding_bytes": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

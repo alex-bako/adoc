@@ -51,3 +51,4 @@ pub(crate) mod value_objects;
 pub(crate) mod values;
 
 pub(crate) mod migration;
+pub(crate) mod migration_qualification;

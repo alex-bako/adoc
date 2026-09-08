@@ -5928,3 +5928,123 @@ fn migration_request_and_actual_receipt_match_portable_schemas() {
         &invalid
     ));
 }
+
+#[test]
+fn migration_qualification_actual_outputs_match_closed_schemas() {
+    let workspace = tempfile::tempdir().unwrap();
+    let root = workspace.path();
+    write(
+        &root.join("agentdoc.config.yaml"),
+        "version: 1\nmode: strict\ndocs_path: docs\n",
+    );
+    write(
+        &root.join("docs/index.adoc"),
+        "# Migration @doc(test.page)\n\n::claim test.claim\nstatus: draft\n--\nBody.\n::\n",
+    );
+    run_git(root, &["init", "-q"]);
+    run_git(root, &["config", "user.email", "test@example.test"]);
+    run_git(root, &["config", "user.name", "Test"]);
+    run_git(root, &["add", "."]);
+    run_git(root, &["commit", "-qm", "source"]);
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    let mut request = json!({"schema_version":"adoc.migration_request.v0", "request_id":"r", "workspace_id":"w", "source_id":"s", "repository_identity":"repo", "revision":{"system":"git", "value":String::from_utf8(output.stdout).unwrap().trim()}, "evaluation_date":"2026-09-08"});
+    let schema_name = "adoc.migration_request.v0.schema.json";
+    assert_valid(schema_name, &request);
+    let bytes = serde_json::to_vec(&request).unwrap();
+    let receipt = adoc_local::prepare_migration(
+        root,
+        &bytes,
+        "0.4.0".into(),
+        format!("sha256:{}", "a".repeat(64)),
+    )
+    .unwrap();
+    let value: serde_json::Value =
+        serde_json::from_str(&receipt.to_canonical_json().unwrap()).unwrap();
+    assert_valid("adoc.migration_receipt.v0.schema.json", &value);
+    let job = json!({"schema_version":"agentdoc.cloud.migration_import_job.v0","connector_id":"connector","observed_at":"2026-09-08T12:00:00Z","source_acl_scope":{"snapshot_id":"acl","source_container_id":"s","source":{"kind":"repository","id":"repo"}},"sources":[{"path":"docs/index.adoc","source_record_id":"record","source_binding_id":"binding"}]});
+    let job_schema = "agentdoc.cloud.migration_import_job.v0.schema.json";
+    assert_valid(job_schema, &job);
+
+    for invalid_utf8 in [false, true] {
+        if invalid_utf8 {
+            fs::write(root.join("docs/index.adoc"), [0xff, 0xfe]).unwrap();
+            run_git(root, &["add", "."]);
+            run_git(root, &["commit", "-qm", "binary"]);
+            let out = Command::new("git")
+                .arg("-C")
+                .arg(root)
+                .args(["rev-parse", "HEAD"])
+                .output()
+                .unwrap();
+            request["revision"]["value"] = json!(String::from_utf8(out.stdout).unwrap().trim());
+        }
+        let result = adoc_core::qualify_migration_from_git(
+            root,
+            &serde_json::to_vec(&request).unwrap(),
+            &serde_json::to_vec(&job).unwrap(),
+            "1",
+            "0.4.0".into(),
+            format!("sha256:{}", "a".repeat(64)),
+        )
+        .unwrap();
+        let output: serde_json::Value =
+            serde_json::from_str(&result.to_canonical_json().unwrap()).unwrap();
+        let schema = "adoc.migration_qualification.v0.schema.json";
+        assert_valid(schema, &output);
+        for (field, value) in [
+            ("qualification_policy_version", json!("2")),
+            ("foreign", json!(true)),
+            ("outcome", json!("active")),
+        ] {
+            let mut bad = output.clone();
+            bad[field] = value;
+            assert!(!schema_accepts(schema, &bad));
+        }
+        if invalid_utf8 {
+            for (field, schema) in [
+                ("source_record_bytes", "adoc.source_record.v1.schema.json"),
+                ("source_binding_bytes", "adoc.source_binding.v0.schema.json"),
+            ] {
+                assert_valid(
+                    schema,
+                    &serde_json::from_str::<serde_json::Value>(
+                        output["sources"][0][field].as_str().unwrap(),
+                    )
+                    .unwrap(),
+                );
+            }
+            let mut bad = output.clone();
+            bad["sources"][0]["source_bytes_base64"] = json!("//4");
+            assert!(!schema_accepts(schema, &bad));
+            let mut mixed = output.clone();
+            mixed["candidate_bundle_bytes"] = json!("{}");
+            assert!(!schema_accepts(schema, &mixed));
+        } else {
+            let receipt: serde_json::Value =
+                serde_json::from_str(output["qualification_receipt_bytes"].as_str().unwrap())
+                    .unwrap();
+            let schema = "adoc.migration_qualification_receipt.v0.schema.json";
+            assert_valid(schema, &receipt);
+            for pointer in [
+                "/lifecycle_mapping_version",
+                "/qualification_policy_version",
+                "/objects/0/reasons/0/code",
+            ] {
+                let mut bad = receipt.clone();
+                *bad.pointer_mut(pointer).unwrap() = json!("unknown");
+                assert!(!schema_accepts(schema, &bad));
+            }
+        }
+    }
+    let native = json!({"schema_version":"agentdoc.cloud.migration_qualification_result.v0", "request_id":"r", "qualification_id":"00000000-0000-4000-8000-000000000001", "outcome":"flagged_source_evidence", "candidates":[], "sources":[{"path":"docs/index.adoc","source_record_id":"00000000-0000-4000-8000-000000000002","source_binding_id":"00000000-0000-4000-8000-000000000003"}]});
+    assert_valid(
+        "agentdoc.cloud.migration_qualification_result.v0.schema.json",
+        &native,
+    );
+}

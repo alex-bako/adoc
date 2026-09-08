@@ -172,6 +172,93 @@ impl FsSourceProvider {
     }
 }
 
+/// Exact byte evidence is independent of whether UTF-8 source decoding succeeds.
+/// Used only by hardened migration snapshots; ordinary source loading is unchanged.
+pub(crate) struct RawMigrationSource {
+    pub(crate) path: String,
+    pub(crate) bytes: Vec<u8>,
+    pub(crate) loaded: Result<SourceFile, SourceLoadError>,
+}
+impl FsSourceProvider {
+    pub(crate) fn load_raw_migration_sources(
+        &self,
+        limit: usize,
+    ) -> Result<Vec<RawMigrationSource>, crate::domain::migration::MigrationError> {
+        use crate::domain::migration::MigrationError;
+        use std::io::Read;
+        let roots = self
+            .resolved_project_roots()
+            .map_err(|_| MigrationError::UnsafeSource)?
+            .ok_or(MigrationError::UnsafeSource)?;
+        let selected = self
+            .root
+            .canonicalize()
+            .map_err(|_| MigrationError::UnsafeSource)?;
+        if !selected.starts_with(&roots.docs) {
+            return Err(MigrationError::UnsafeSource);
+        }
+        let mut remaining = limit;
+        let mut output = Vec::new();
+        for entry in source_paths(&self.root, Some(&roots.docs)) {
+            let entry = entry.map_err(|_| MigrationError::UnsafeSource)?;
+            let physical = entry
+                .path
+                .canonicalize()
+                .map_err(|_| MigrationError::UnsafeSource)?;
+            if !physical.starts_with(&roots.docs)
+                || !physical.is_file()
+                || fs::symlink_metadata(&entry.path)
+                    .map_err(|_| MigrationError::UnsafeSource)?
+                    .file_type()
+                    .is_symlink()
+            {
+                return Err(MigrationError::UnsafeSource);
+            }
+            let logical = physical
+                .strip_prefix(&roots.project)
+                .map_err(|_| MigrationError::UnsafeSource)?;
+            let path = LogicalPath::from_relative_path(logical)
+                .map_err(|_| MigrationError::UnsafeSource)?
+                .as_str()
+                .to_owned();
+            let identity = physical
+                .strip_prefix(&roots.docs)
+                .map_err(|_| MigrationError::UnsafeSource)?
+                .to_path_buf();
+            let file = fs::File::open(&physical).map_err(|_| MigrationError::UnsafeSource)?;
+            let mut bytes = Vec::new();
+            file.take(remaining as u64 + 1)
+                .read_to_end(&mut bytes)
+                .map_err(|_| MigrationError::UnsafeSource)?;
+            remaining = remaining
+                .checked_sub(bytes.len())
+                .ok_or(MigrationError::OutputLimit)?;
+            let loaded = std::str::from_utf8(&bytes)
+                .map(|text| {
+                    SourceFile::new_with_coordinates(
+                        physical,
+                        text.into(),
+                        identity,
+                        PathBuf::from(&path),
+                    )
+                })
+                .map_err(|_| {
+                    SourceLoadError::unreadable(
+                        PathBuf::from(&path),
+                        "stream did not contain valid UTF-8",
+                    )
+                });
+            output.push(RawMigrationSource {
+                path,
+                bytes,
+                loaded,
+            });
+        }
+        output.sort_by(|a, b| a.path.cmp(&b.path));
+        Ok(output)
+    }
+}
+
 fn canonical_root(root: &Path) -> Result<PathBuf, SourceLoadError> {
     root.canonicalize()
         .map_err(|error| SourceLoadError::unreadable(root.to_path_buf(), error.to_string()))
@@ -247,7 +334,14 @@ fn collect_source_files(
         }
     };
 
-    for entry in entries.flatten() {
+    for entry in entries {
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(error) => {
+                paths.push(source_path_for_unreadable_directory(root, directory, error));
+                continue;
+            }
+        };
         let path = entry.path();
         if path.is_dir() {
             collect_source_files(root, &path, containment_root, visited, paths);

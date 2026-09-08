@@ -43,7 +43,7 @@ pub(crate) fn migration_import(
         }
     }
 }
-fn read_bounded(
+pub(super) fn read_bounded(
     path: &Path,
     limit: usize,
     refusal: MigrationError,

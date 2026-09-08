@@ -238,6 +238,28 @@ fn run_with_provider<P: SourceProvider>(
     run_with_context_bytes(provider, input, None)
 }
 
+/// Validate a migration's once-read raw snapshot, including honest UTF-8 failures.
+pub(crate) fn run_migration_snapshot_validation(
+    input: ValidationRuntimeInput,
+    sources: &[Result<SourceFile, SourceLoadError>],
+) -> Result<ValidationRuntimeOutcome, ValidationRuntimeError> {
+    let provider = match &input.project {
+        Some(project) => FsSourceProvider::for_project(
+            input.root.clone(),
+            project.project_root.clone(),
+            project.docs_root.clone(),
+        ),
+        None => FsSourceProvider::new(input.root.clone()),
+    };
+    run_with_provider(
+        &SnapshotSourceProvider {
+            sources: sources.to_vec(),
+            inner: &provider,
+        },
+        input,
+    )
+}
+
 /// Revalidate the whole once-read snapshot with exact migration context bytes.
 /// The same validator constructs the receipt; no externally supplied receipt is consumed.
 pub(crate) fn run_migration_validation(
@@ -744,6 +766,58 @@ mod tests {
             fs::create_dir_all(parent).expect("parent dir");
         }
         fs::write(path, contents).expect("fixture write");
+    }
+
+    #[test]
+    fn migration_qualification_raw_snapshot_preserves_receipt_and_failed_input_honesty() {
+        let project = tempfile::tempdir().unwrap();
+        let docs = project.path().join("docs");
+        write(
+            &docs.join("valid.adoc"),
+            "# Valid @doc(test.page)\n\n::claim test.claim\nstatus: draft\n--\nBody.\n::\n",
+        );
+        fs::write(docs.join("invalid.adoc"), [0xff, 0xfe]).unwrap();
+        let config = project.path().join("agentdoc.config.yaml");
+        write(&config, "version: 1\nmode: strict\ndocs_path: docs\n");
+        let mut input = standalone_input(&docs);
+        input.anchor_root = project.path().to_path_buf();
+        input.project = Some(super::super::compile::LocalProjectContext {
+            project_root: project.path().to_path_buf(),
+            docs_root: docs.clone(),
+        });
+        input.config_path = Some(config);
+        let ordinary = run_validation_runtime(input.clone()).unwrap();
+        let provider =
+            FsSourceProvider::for_project(docs.clone(), project.path().to_path_buf(), docs.clone());
+        let raw = provider.load_raw_migration_sources(4096).unwrap();
+        assert_eq!(raw[0].bytes, [0xff, 0xfe]);
+        assert!(provider.load_raw_migration_sources(1).is_err());
+        // Once-read source bytes still determine both validation and receipt after disk changes.
+        fs::write(docs.join("invalid.adoc"), "# Now valid\n").unwrap();
+        fs::write(docs.join("valid.adoc"), "dirty invalid input").unwrap();
+        let result = run_migration_snapshot_validation(
+            input,
+            &raw.iter()
+                .map(|source| source.loaded.clone())
+                .collect::<Vec<_>>(),
+        )
+        .unwrap();
+        assert_eq!(
+            ordinary.receipt.to_canonical_json(),
+            result.receipt.to_canonical_json()
+        );
+        assert_eq!(result.receipt.result(), ValidationResult::Fail);
+        assert!(result.graph_artifact.is_none());
+        let receipt: serde_json::Value =
+            serde_json::from_str(&result.receipt.to_canonical_json()).unwrap();
+        assert_eq!(receipt["inputs"].as_array().unwrap().len(), 1);
+        assert_eq!(receipt["inputs"][0]["path"], "docs/valid.adoc");
+        assert_eq!(
+            receipt["diagnostics_digest"],
+            sha256_prefixed(&serde_json::to_vec(&result.diagnostics).unwrap())
+        );
+        assert_eq!(receipt["context"].as_array().unwrap().len(), 1);
+        assert_eq!(receipt["context"][0]["name"], "config");
     }
 
     fn standalone_input(root: &Path) -> ValidationRuntimeInput {

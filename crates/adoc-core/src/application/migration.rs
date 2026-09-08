@@ -132,14 +132,17 @@ struct MigrationValidationInvocation<'a> {
 }
 impl MigrationImportBundle {
     pub fn to_canonical_json(&self) -> Result<String, MigrationError> {
-        use std::io::Write;
-        let mut output = MigrationOutput(Vec::new());
-        serde_json::to_writer(&mut output, self).map_err(|_| MigrationError::OutputLimit)?;
-        output
-            .write_all(b"\n")
-            .map_err(|_| MigrationError::OutputLimit)?;
-        String::from_utf8(output.0).map_err(|_| MigrationError::ValidationUnavailable)
+        bounded_json(self)
     }
+}
+fn bounded_json(value: &impl Serialize) -> Result<String, MigrationError> {
+    use std::io::Write;
+    let mut output = MigrationOutput(Vec::new());
+    serde_json::to_writer(&mut output, value).map_err(|_| MigrationError::OutputLimit)?;
+    output
+        .write_all(b"\n")
+        .map_err(|_| MigrationError::OutputLimit)?;
+    String::from_utf8(output.0).map_err(|_| MigrationError::ValidationUnavailable)
 }
 struct MigrationOutput(Vec<u8>);
 impl std::io::Write for MigrationOutput {
@@ -163,13 +166,6 @@ pub(crate) fn import_with_provider(
     runtime_version: String,
     runtime_binary_digest: String,
 ) -> Result<MigrationImportBundle, MigrationError> {
-    use crate::domain::source_provenance::{
-        SourceBindingCoordinates, SourceBindingInput, build_source_binding,
-    };
-    use crate::domain::source_record::{
-        RetentionClass, SourceArtifact, SourceRecordInput, build_source_record,
-    };
-    use std::collections::BTreeMap;
     let request = MigrationRequest::parse(request_bytes)?;
     let job = MigrationImportJob::parse(job_bytes, &request)?;
     let snapshot = provider
@@ -186,6 +182,27 @@ pub(crate) fn import_with_provider(
     )?;
     let validated =
         run_validation_runtime(input.clone()).map_err(|_| MigrationError::ValidationUnavailable)?;
+    build_import_bundle(
+        request_bytes,
+        job_bytes,
+        request,
+        job,
+        target,
+        input,
+        validated,
+    )
+}
+
+fn build_import_bundle(
+    request_bytes: &[u8],
+    job_bytes: &[u8],
+    request: MigrationRequest,
+    job: MigrationImportJob,
+    target: MigrationValidationTarget,
+    input: ValidationRuntimeInput,
+    validated: super::validation_runtime::ValidationRuntimeOutcome,
+) -> Result<MigrationImportBundle, MigrationError> {
+    use std::collections::BTreeMap;
     if validated.receipt.result() != ValidationResult::Pass {
         return Err(MigrationError::ValidationFailed);
     }
@@ -201,9 +218,6 @@ pub(crate) fn import_with_provider(
         return Err(MigrationError::InvalidJob);
     }
     let request_digest = sha256_prefixed(request_bytes);
-    let observed_at = chrono::DateTime::parse_from_rfc3339(&job.observed_at)
-        .map_err(|_| MigrationError::InvalidJob)?
-        .with_timezone(&chrono::Utc);
     let mut bundle_bytes = graph.len().saturating_add(target.config_bytes.len());
     if bundle_bytes > MIGRATION_IMPORT_MAX_BYTES {
         return Err(MigrationError::OutputLimit);
@@ -215,43 +229,13 @@ pub(crate) fn import_with_provider(
             .to_str()
             .ok_or(MigrationError::UnsafeSource)?;
         let metadata = metadata.get(path).ok_or(MigrationError::InvalidJob)?;
-        let record = build_source_record(SourceRecordInput {
-            source_record_id: metadata.source_record_id.clone(),
-            workspace_id: request.workspace_id.clone(),
-            connector_id: job.connector_id.clone(),
-            source: SourceArtifact {
-                provider: "git".into(),
-                kind: "file".into(),
-                external_id: path.into(),
-                external_version: request.revision.value.clone(),
-            },
-            source_acl_scope: job.source_acl_scope.clone(),
-            observed_at,
-            media_type: "text/plain".into(),
-            retention_class: RetentionClass::ExactCandidateInput,
-            exact_bytes: source.text.as_bytes(),
-        })
-        .map_err(|_| MigrationError::InvalidJob)?;
-        let binding = build_source_binding(SourceBindingInput {
-            source_binding_id: metadata.source_binding_id.clone(),
-            workspace_id: request.workspace_id.clone(),
-            source_record_id: metadata.source_record_id.clone(),
-            coordinates: SourceBindingCoordinates {
-                connector: "git".into(),
-                source: path.into(),
-                revision: Some(request.revision.value.clone()),
-                path: path.into(),
-                anchor: "document".into(),
-                source_revision_digest: record.content_digest().into(),
-            },
-        })
-        .map_err(|_| MigrationError::InvalidJob)?;
-        let source_record_bytes = record
-            .to_canonical_json()
-            .map_err(|_| MigrationError::ValidationUnavailable)?;
-        let source_binding_bytes = binding
-            .to_canonical_json()
-            .map_err(|_| MigrationError::ValidationUnavailable)?;
+        let (source_record_bytes, source_binding_bytes) = source_evidence(
+            &request,
+            &job,
+            metadata,
+            source.text.as_bytes(),
+            "text/plain",
+        )?;
         let invocation = MigrationValidationInvocation {
             schema_version: MIGRATION_VALIDATION_INVOCATION_SCHEMA_VERSION,
             workspace_id: &request.workspace_id,
@@ -309,6 +293,282 @@ pub(crate) fn import_with_provider(
         config_bytes: target.config_bytes,
         graph_artifact_bytes: graph,
         sources,
+    })
+}
+
+fn source_evidence(
+    request: &MigrationRequest,
+    job: &MigrationImportJob,
+    metadata: &crate::domain::migration::MigrationImportSource,
+    bytes: &[u8],
+    media_type: &str,
+) -> Result<(String, String), MigrationError> {
+    use crate::domain::source_provenance::{
+        SourceBindingCoordinates, SourceBindingInput, build_source_binding,
+    };
+    use crate::domain::source_record::{
+        RetentionClass, SourceArtifact, SourceRecordInput, build_source_record,
+    };
+    let path = metadata.path.as_str();
+    let observed_at = chrono::DateTime::parse_from_rfc3339(&job.observed_at)
+        .map_err(|_| MigrationError::InvalidJob)?
+        .with_timezone(&chrono::Utc);
+    let record = build_source_record(SourceRecordInput {
+        source_record_id: metadata.source_record_id.clone(),
+        workspace_id: request.workspace_id.clone(),
+        connector_id: job.connector_id.clone(),
+        source: SourceArtifact {
+            provider: "git".into(),
+            kind: "file".into(),
+            external_id: path.into(),
+            external_version: request.revision.value.clone(),
+        },
+        source_acl_scope: job.source_acl_scope.clone(),
+        observed_at,
+        media_type: media_type.into(),
+        retention_class: RetentionClass::ExactCandidateInput,
+        exact_bytes: bytes,
+    })
+    .map_err(|_| MigrationError::InvalidJob)?;
+    let binding = build_source_binding(SourceBindingInput {
+        source_binding_id: metadata.source_binding_id.clone(),
+        workspace_id: request.workspace_id.clone(),
+        source_record_id: metadata.source_record_id.clone(),
+        coordinates: SourceBindingCoordinates {
+            connector: "git".into(),
+            source: path.into(),
+            revision: Some(request.revision.value.clone()),
+            path: path.into(),
+            anchor: "document".into(),
+            source_revision_digest: record.content_digest().into(),
+        },
+    })
+    .map_err(|_| MigrationError::InvalidJob)?;
+    let source_record_bytes = record
+        .to_canonical_json()
+        .map_err(|_| MigrationError::ValidationUnavailable)?;
+    let source_binding_bytes = binding
+        .to_canonical_json()
+        .map_err(|_| MigrationError::ValidationUnavailable)?;
+    Ok((source_record_bytes, source_binding_bytes))
+}
+
+use crate::domain::migration_qualification::{
+    self, MIGRATION_LIFECYCLE_MAPPING_VERSION, MIGRATION_QUALIFICATION_POLICY_VERSION,
+    MIGRATION_QUALIFICATION_RECEIPT_SCHEMA_VERSION, MIGRATION_QUALIFICATION_SCHEMA_VERSION,
+    QualificationFreshness, QualifiedMigrationObject,
+};
+
+/// Actual-runtime evidence only. Construction is private; eligibility never grants authority.
+#[derive(Debug, Serialize)]
+pub struct MigrationQualification {
+    schema_version: &'static str,
+    request: MigrationRequest,
+    request_digest: String,
+    job_digest: String,
+    qualification_policy_version: &'static str,
+    config_bytes: String,
+    #[serde(flatten)]
+    outcome: QualificationOutcome,
+}
+#[derive(Debug, Serialize)]
+#[serde(tag = "outcome", rename_all = "snake_case")]
+enum QualificationOutcome {
+    Evaluated {
+        candidate_bundle_bytes: String,
+        qualification_receipt_bytes: String,
+    },
+    FlaggedSourceEvidence {
+        validation_receipt_bytes: String,
+        diagnostics_bytes: String,
+        sources: Vec<FlaggedSourceEvidence>,
+    },
+}
+#[derive(Debug, Serialize)]
+struct FlaggedSourceEvidence {
+    path: String,
+    source_bytes_base64: String,
+    source_record_bytes: String,
+    source_binding_bytes: String,
+}
+#[derive(Debug, Serialize)]
+struct QualificationReceipt {
+    schema_version: &'static str,
+    request_digest: String,
+    job_digest: String,
+    candidate_bundle_digest: String,
+    graph_artifact_digest: String,
+    config_digest: String,
+    evaluation_date: String,
+    qualification_policy_version: &'static str,
+    lifecycle_mapping_version: &'static str,
+    objects: Vec<QualifiedMigrationObject>,
+}
+impl MigrationQualification {
+    pub fn result(&self) -> ValidationResult {
+        match self.outcome {
+            QualificationOutcome::Evaluated { .. } => ValidationResult::Pass,
+            QualificationOutcome::FlaggedSourceEvidence { .. } => ValidationResult::Fail,
+        }
+    }
+    pub fn to_canonical_json(&self) -> Result<String, MigrationError> {
+        bounded_json(self)
+    }
+}
+
+pub(crate) fn qualify_with_provider(
+    request_bytes: &[u8],
+    job_bytes: &[u8],
+    policy_version: &str,
+    provider: &impl SnapshotWorkspaceProvider,
+    resolve: impl FnOnce(&Path) -> Result<MigrationValidationTarget, MigrationError>,
+    runtime_version: String,
+    runtime_binary_digest: String,
+) -> Result<MigrationQualification, MigrationError> {
+    use crate::domain::graph::GraphIndex;
+    use crate::infrastructure::{
+        artifact::graph_json::parse_graph_artifact_document, source::fs::FsSourceProvider,
+    };
+    use base64::{Engine, engine::general_purpose::STANDARD};
+    migration_qualification::require_policy(policy_version)?;
+    let request = MigrationRequest::parse(request_bytes)?;
+    let job = MigrationImportJob::parse(job_bytes, &request)?;
+    let snapshot = provider
+        .checkout(&SnapshotSelector::GitRef(GitRef::new(
+            &request.revision.value,
+        )))
+        .map_err(|_| MigrationError::SnapshotUnavailable)?;
+    let target = resolve(snapshot.path())?;
+    let project = target
+        .project
+        .as_ref()
+        .ok_or(MigrationError::UnsafeSource)?;
+    let raw = FsSourceProvider::for_project(
+        target.root.clone(),
+        project.project_root.clone(),
+        project.docs_root.clone(),
+    )
+    .load_raw_migration_sources(MIGRATION_IMPORT_MAX_BYTES)?;
+    let metadata: std::collections::BTreeMap<_, _> = job
+        .sources
+        .iter()
+        .map(|source| (source.path.as_str(), source))
+        .collect();
+    if metadata.len() != raw.len()
+        || raw
+            .iter()
+            .any(|source| !metadata.contains_key(source.path.as_str()))
+    {
+        return Err(MigrationError::InvalidJob);
+    }
+    let input = target.runtime_input(
+        snapshot.path(),
+        &request,
+        runtime_version,
+        runtime_binary_digest,
+    )?;
+    let validated = super::validation_runtime::run_migration_snapshot_validation(
+        input.clone(),
+        &raw.iter()
+            .map(|source| source.loaded.clone())
+            .collect::<Vec<_>>(),
+    )
+    .map_err(|_| MigrationError::ValidationUnavailable)?;
+    let request_digest = sha256_prefixed(request_bytes);
+    let job_digest = sha256_prefixed(job_bytes);
+    let config_bytes = target.config_bytes.clone();
+    let outcome = if validated.receipt.result() == ValidationResult::Pass {
+        let graph = validated
+            .graph_artifact
+            .as_ref()
+            .ok_or(MigrationError::ValidationFailed)?;
+        let graph_digest = sha256_prefixed(graph.as_bytes());
+        let document = parse_graph_artifact_document(Path::new("graph_artifact"), graph.as_bytes())
+            .map_err(|_| MigrationError::ValidationUnavailable)?;
+        let session = super::graph::GraphSession::new(
+            GraphIndex::from_document(document)
+                .map_err(|_| MigrationError::ValidationUnavailable)?,
+        );
+        let mut freshness = QualificationFreshness::default();
+        for signal in super::signals::evaluate_stale_for_date(&session, None, request.date()?) {
+            match signal.category {
+                super::signals::StaleCategory::Stale => {
+                    freshness.stale.insert(signal.id);
+                }
+                super::signals::StaleCategory::ReviewOverdue => {
+                    freshness.review_overdue.insert(signal.id);
+                }
+                super::signals::StaleCategory::ExpiringSoon => {}
+            }
+        }
+        let objects = migration_qualification::evaluate(
+            &session.objects().collect::<Vec<_>>(),
+            &job.sources,
+            &freshness,
+            &validated.diagnostics,
+            policy_version,
+        )?;
+        let bundle = build_import_bundle(
+            request_bytes,
+            job_bytes,
+            request.clone(),
+            job,
+            target,
+            input,
+            validated,
+        )?;
+        let candidate_bundle_bytes = bundle.to_canonical_json()?;
+        let receipt = QualificationReceipt {
+            schema_version: MIGRATION_QUALIFICATION_RECEIPT_SCHEMA_VERSION,
+            request_digest: request_digest.clone(),
+            job_digest: job_digest.clone(),
+            candidate_bundle_digest: sha256_prefixed(candidate_bundle_bytes.as_bytes()),
+            graph_artifact_digest: graph_digest,
+            config_digest: sha256_prefixed(config_bytes.as_bytes()),
+            evaluation_date: request.evaluation_date.clone(),
+            qualification_policy_version: MIGRATION_QUALIFICATION_POLICY_VERSION,
+            lifecycle_mapping_version: MIGRATION_LIFECYCLE_MAPPING_VERSION,
+            objects,
+        };
+        QualificationOutcome::Evaluated {
+            candidate_bundle_bytes,
+            qualification_receipt_bytes: bounded_json(&receipt)?,
+        }
+    } else {
+        let mut sources = Vec::new();
+        for source in raw {
+            let metadata = metadata
+                .get(source.path.as_str())
+                .ok_or(MigrationError::InvalidJob)?;
+            let (source_record_bytes, source_binding_bytes) = source_evidence(
+                &request,
+                &job,
+                metadata,
+                &source.bytes,
+                "application/octet-stream",
+            )?;
+            sources.push(FlaggedSourceEvidence {
+                path: source.path,
+                source_bytes_base64: STANDARD.encode(source.bytes),
+                source_record_bytes,
+                source_binding_bytes,
+            });
+        }
+        QualificationOutcome::FlaggedSourceEvidence {
+            validation_receipt_bytes: validated.receipt.to_canonical_json(),
+            diagnostics_bytes: serde_json::to_string(&validated.diagnostics)
+                .map_err(|_| MigrationError::ValidationUnavailable)?,
+            sources,
+        }
+    };
+    Ok(MigrationQualification {
+        schema_version: MIGRATION_QUALIFICATION_SCHEMA_VERSION,
+        request,
+        request_digest,
+        job_digest,
+        qualification_policy_version: MIGRATION_QUALIFICATION_POLICY_VERSION,
+        config_bytes,
+        outcome,
     })
 }
 

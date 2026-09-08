@@ -261,3 +261,6 @@ mod format_tests {
         );
     }
 }
+
+mod migration_qualify;
+pub(crate) use migration_qualify::migration_qualify;
