@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json",
+  "title": "agentdoc.cloud.migration_transition_request.v0",
+  "description": "Closed Cloud worker command, 1..16384 UTF-8 bytes; native admission rejects duplicate keys and enforces current authorization, predecessor and evidence bindings. Published state vocabulary includes later cutover states whose edges remain unavailable until implemented. Shape validity grants no authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "migration_id",
+    "transition_id",
+    "expected",
+    "to_state",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "agentdoc.cloud.migration_transition_request.v0"
+    },
+    "migration_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "transition_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ordinal",
+        "receipt_digest"
+      ],
+      "properties": {
+        "ordinal": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "receipt_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "to_state": {
+      "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json#/$defs/state"
+    },
+    "evidence": {
+      "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json#/$defs/evidence"
+    }
+  },
+  "$defs": {
+    "state": {
+      "enum": [
+        "prepared",
+        "snapshot_bound",
+        "importing",
+        "validated",
+        "awaiting_attestation",
+        "catching_up",
+        "ready_to_cutover",
+        "cutover_committed",
+        "rolled_back",
+        "failed"
+      ]
+    },
+    "evidence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "digest"
+          ],
+          "properties": {
+            "kind": {
+              "const": "preparation"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "digest"
+          ],
+          "properties": {
+            "kind": {
+              "const": "import_job"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "qualification_id",
+            "envelope_digest"
+          ],
+          "properties": {
+            "kind": {
+              "const": "qualification"
+            },
+            "qualification_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "envelope_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "initialization_id",
+            "attestation_digest"
+          ],
+          "properties": {
+            "kind": {
+              "const": "initialization"
+            },
+            "initialization_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "attestation_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "failure"
+            },
+            "reason": {
+              "const": "worker_refused"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason",
+            "qualification_id",
+            "envelope_digest"
+          ],
+          "properties": {
+            "kind": {
+              "const": "failure"
+            },
+            "reason": {
+              "enum": [
+                "validation_failed",
+                "no_eligible_targets"
+              ]
+            },
+            "qualification_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "envelope_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

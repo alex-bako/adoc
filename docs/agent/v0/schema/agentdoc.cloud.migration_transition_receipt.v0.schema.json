@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_receipt.v0.schema.json",
+  "title": "agentdoc.cloud.migration_transition_receipt.v0",
+  "description": "Exact native canonical_json_v0 plus LF receipt; its byte digest and predecessor link preserve append order. This is not a signature or protection against privileged rewriting of the entire store. Native admission owns adjacency, current authority and actual evidence preconditions. State labels alone do not perform cutover or rollback.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "workspace_id",
+    "migration_id",
+    "transition_id",
+    "ordinal",
+    "previous_receipt_digest",
+    "command_digest",
+    "request_digest",
+    "job_digest",
+    "preparation_receipt_digest",
+    "scope",
+    "initial_revision",
+    "from_state",
+    "to_state",
+    "transition_policy_version",
+    "evidence",
+    "principal_id",
+    "authorization_decision_id",
+    "recorded_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "agentdoc.cloud.migration_transition_receipt.v0"
+    },
+    "workspace_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "migration_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "transition_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "ordinal": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "previous_receipt_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "command_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "job_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "preparation_receipt_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workspace_id",
+        "connector_id",
+        "source_container_id",
+        "resource"
+      ],
+      "properties": {
+        "workspace_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "connector_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "source_container_id": {
+          "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json#/properties/source_id"
+        },
+        "resource": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "repository"
+            },
+            "id": {
+              "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json#/properties/repository_identity"
+            }
+          }
+        }
+      }
+    },
+    "initial_revision": {
+      "$ref": "adoc://agent/v0/schema/adoc.migration_request.v0.schema.json#/properties/revision/properties/value"
+    },
+    "from_state": {
+      "anyOf": [
+        {
+          "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json#/$defs/state"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "to_state": {
+      "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json#/$defs/state"
+    },
+    "transition_policy_version": {
+      "const": "1"
+    },
+    "evidence": {
+      "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json#/$defs/evidence"
+    },
+    "principal_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "authorization_decision_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "ordinal": {
+            "const": "1"
+          }
+        },
+        "required": [
+          "ordinal"
+        ]
+      },
+      "then": {
+        "properties": {
+          "from_state": {
+            "type": "null"
+          },
+          "previous_receipt_digest": {
+            "type": "null"
+          },
+          "to_state": {
+            "const": "prepared"
+          },
+          "evidence": {
+            "properties": {
+              "kind": {
+                "const": "preparation"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "ordinal": {
+            "type": "string",
+            "pattern": "^(?:[2-9]|[1-9][0-9]+)$"
+          },
+          "from_state": {
+            "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json#/$defs/state"
+          },
+          "previous_receipt_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "transition_form": {
+      "if": {
+        "properties": {
+          "ordinal": {
+            "const": "1"
+          }
+        },
+        "required": [
+          "ordinal"
+        ]
+      },
+      "then": {
+        "properties": {
+          "from_state": {
+            "type": "null"
+          },
+          "previous_receipt_digest": {
+            "type": "null"
+          },
+          "to_state": {
+            "const": "prepared"
+          },
+          "evidence": {
+            "properties": {
+              "kind": {
+                "const": "preparation"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "ordinal": {
+            "type": "string",
+            "pattern": "^(?:[2-9]|[1-9][0-9]+)$"
+          },
+          "from_state": {
+            "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json#/$defs/state"
+          },
+          "previous_receipt_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

@@ -753,6 +753,36 @@ const RESOURCES: &[AgentResource] = &[
         ),
     },
     AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration-transition-request-v0-json",
+        title: "Migration Transition Request JSON Schema",
+        description: "Closed Cloud migration lifecycle contract; native evidence and authority remain required.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_receipt.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration-transition-receipt-v0-json",
+        title: "Migration Transition Receipt JSON Schema",
+        description: "Closed Cloud migration lifecycle contract; native evidence and authority remain required.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_transition_receipt.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_transition_result.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration-transition-result-v0-json",
+        title: "Migration Transition Result JSON Schema",
+        description: "Closed Cloud migration lifecycle contract; native evidence and authority remain required.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_transition_result.v0.schema.json"
+        ),
+    },
+    AgentResource {
         uri: "adoc://agent/v0/schema/adoc.migration_qualification.v0.schema.json",
         name: "schema-adoc-migration_qualification-v0-json",
         title: "Migration Qualification Contract JSON Schema",

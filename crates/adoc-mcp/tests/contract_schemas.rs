@@ -6482,3 +6482,283 @@ fn migration_export_actual_native_outputs_match_published_contracts() {
         BTreeSet::from(["evaluated", "flagged_source_evidence"])
     );
 }
+
+#[test]
+fn migration_transition_contracts_preserve_closed_evidence_and_initial_form() {
+    let id = "00000000-0000-4000-8000-000000000001";
+    let digest = format!("sha256:{}", "a".repeat(64));
+    let request = json!({"schema_version":"agentdoc.cloud.migration_transition_request.v0",
+        "migration_id":id,"transition_id":id,"expected":{"ordinal":"1","receipt_digest":digest},
+        "to_state":"snapshot_bound","evidence":{"kind":"preparation","digest":digest}});
+    let evidence = [
+        json!({"kind":"preparation","digest":digest}),
+        json!({"kind":"import_job","digest":digest}),
+        json!({"kind":"qualification","qualification_id":id,"envelope_digest":digest}),
+        json!({"kind":"initialization","initialization_id":id,"attestation_digest":digest}),
+        json!({"kind":"failure","reason":"worker_refused"}),
+        json!({"kind":"failure","reason":"validation_failed","qualification_id":id,"envelope_digest":digest}),
+        json!({"kind":"failure","reason":"no_eligible_targets","qualification_id":id,"envelope_digest":digest}),
+    ];
+    let request_name = "agentdoc.cloud.migration_transition_request.v0.schema.json";
+    let request_validator = validator_for(&schema(request_name));
+    for entry in &evidence {
+        let mut value = request.clone();
+        value["evidence"] = entry.clone();
+        assert_valid(request_name, &value);
+        for key in entry.as_object().unwrap().keys() {
+            let mut missing = value.clone();
+            missing["evidence"].as_object_mut().unwrap().remove(key);
+            assert!(
+                !request_validator.is_valid(&missing),
+                "evidence requires {key}"
+            );
+        }
+        value["evidence"]["freeform"] = json!("untrusted source text");
+        assert!(!request_validator.is_valid(&value));
+    }
+    for bad in [
+        json!({"kind":"candidate_import","digest":digest}),
+        json!({"kind":"failure","reason":"worker_refused","qualification_id":id,"envelope_digest":digest}),
+        json!({"kind":"failure","reason":"unknown"}),
+        json!({"kind":"qualification","qualification_id":id,"envelope_digest":digest,"digest":digest}),
+    ] {
+        let mut value = request.clone();
+        value["evidence"] = bad;
+        assert!(!request_validator.is_valid(&value));
+    }
+    let scope = json!({"workspace_id":id,"connector_id":id,"source_container_id":"source-one","resource":{"kind":"repository","id":"repo-one"}});
+    let receipt = json!({"schema_version":"agentdoc.cloud.migration_transition_receipt.v0",
+        "workspace_id":id,"migration_id":id,"transition_id":id,"ordinal":"1","previous_receipt_digest":null,
+        "command_digest":digest,"request_digest":digest,"job_digest":digest,"preparation_receipt_digest":digest,
+        "scope":scope,"initial_revision":"a".repeat(40),"from_state":null,"to_state":"prepared",
+        "transition_policy_version":"1","evidence":evidence[0],"principal_id":id,
+        "authorization_decision_id":id,"recorded_at":"2026-09-08T14:23:01.123456+00:00"});
+    let receipt_name = "agentdoc.cloud.migration_transition_receipt.v0.schema.json";
+    let receipt_validator = validator_for(&schema(receipt_name));
+    assert_valid(receipt_name, &receipt);
+    let mut successor = receipt.clone();
+    successor["ordinal"] = json!("9007199254740993");
+    successor["previous_receipt_digest"] = json!(digest);
+    successor["from_state"] = json!("prepared");
+    successor["to_state"] = json!("snapshot_bound");
+    assert!(receipt_validator.is_valid(&successor));
+    for (field, bad) in [
+        ("from_state", json!("prepared")),
+        ("previous_receipt_digest", json!(digest)),
+        ("to_state", json!("snapshot_bound")),
+        ("evidence", evidence[1].clone()),
+    ] {
+        let mut invalid = receipt.clone();
+        invalid[field] = bad;
+        assert!(!receipt_validator.is_valid(&invalid), "initial {field}");
+    }
+    for field in ["from_state", "previous_receipt_digest"] {
+        let mut invalid = successor.clone();
+        invalid[field] = json!(null);
+        assert!(!receipt_validator.is_valid(&invalid), "successor {field}");
+    }
+    for bad in [json!(1), json!("0"), json!("01"), json!("-1"), json!("1.5")] {
+        let mut invalid = receipt.clone();
+        invalid["ordinal"] = bad.clone();
+        assert!(!receipt_validator.is_valid(&invalid));
+        let mut invalid = request.clone();
+        invalid["expected"]["ordinal"] = bad;
+        assert!(!request_validator.is_valid(&invalid));
+    }
+    for (field, bad) in [
+        ("initial_revision", json!("0".repeat(40))),
+        ("initial_revision", json!("main")),
+        ("transition_policy_version", json!("2")),
+        ("to_state", json!("unknown")),
+        ("principal_id", json!("actor")),
+        ("recorded_at", json!("2026-09-08")),
+    ] {
+        let mut invalid = successor.clone();
+        invalid[field] = bad;
+        assert!(!receipt_validator.is_valid(&invalid), "reject {field}");
+    }
+    for pointer in ["/scope", "/scope/resource"] {
+        let mut invalid = receipt.clone();
+        invalid.pointer_mut(pointer).unwrap()["extra"] = json!(true);
+        assert!(!receipt_validator.is_valid(&invalid));
+    }
+    let result = json!({"schema_version":"agentdoc.cloud.migration_transition_result.v0","receipt_bytes_base64":"e30K","receipt_digest":digest});
+    let result_name = "agentdoc.cloud.migration_transition_result.v0.schema.json";
+    assert_valid(result_name, &result);
+    let result_validator = validator_for(&schema(result_name));
+    for bad in ["", "e30K\n", "e30_", "abc", "===="] {
+        let mut invalid = result.clone();
+        invalid["receipt_bytes_base64"] = json!(bad);
+        assert!(!result_validator.is_valid(&invalid));
+    }
+    for (name, value) in [
+        (request_name, &request),
+        (receipt_name, &receipt),
+        (result_name, &result),
+    ] {
+        let validator = validator_for(&schema(name));
+        for field in value.as_object().unwrap().keys() {
+            let mut invalid = value.clone();
+            invalid.as_object_mut().unwrap().remove(field);
+            assert!(!validator.is_valid(&invalid), "{name} requires {field}");
+        }
+        let mut extra = value.clone();
+        extra["receipt"] = json!({});
+        assert!(!validator.is_valid(&extra));
+        let mut unknown = value.clone();
+        unknown["schema_version"] = json!("unknown");
+        assert!(!validator.is_valid(&unknown));
+    }
+    let validation = json!({"schema_version":"adoc.validation_receipt.v0","runtime":{"version":"0.4.0","binary_digest":digest},"contract_versions":{"graph":"adoc.graph.v6"},"evaluation_date":"2026-09-08","inputs":[{"path":"docs/index.adoc","digest":digest}],"context":[{"name":"config","digest":digest}],"result":"pass","diagnostics_digest":digest});
+    let parent = json!({"workspace_id":id,"migration_id":id,"source_request_id":"external-request","request_digest":digest,"job_digest":digest,"preparation_receipt_digest":digest,"preparation_validation":validation,"connector_id":id,"scope":scope,"initial_revision":"a".repeat(40),"principal":id,"authorization_decision_id":id,"created_at":receipt["recorded_at"]});
+    let mut child = receipt.clone();
+    for field in [
+        "schema_version",
+        "request_digest",
+        "job_digest",
+        "preparation_receipt_digest",
+        "scope",
+        "initial_revision",
+    ] {
+        child.as_object_mut().unwrap().remove(field);
+    }
+    let principal = child
+        .as_object_mut()
+        .unwrap()
+        .remove("principal_id")
+        .unwrap();
+    child["principal"] = principal;
+    child["receipt_digest"] = json!(digest);
+    let native_name = "agentdoc.cloud.export_native_fact.v0.schema.json";
+    let native_validator = validator_for(&schema(native_name));
+    for (kind, record) in [
+        ("migration_lifecycle", parent),
+        ("migration_lifecycle_transition", child),
+    ] {
+        let value = json!({"schema_version":"agentdoc.cloud.export_native_fact.v0","kind":kind,"record":record});
+        assert_valid(native_name, &value);
+        for key in record.as_object().unwrap().keys() {
+            let mut invalid = value.clone();
+            invalid["record"].as_object_mut().unwrap().remove(key);
+            assert!(
+                !native_validator.is_valid(&invalid),
+                "{kind} requires {key}"
+            );
+        }
+        for key in [
+            "request_bytes",
+            "job_bytes",
+            "command_bytes",
+            "receipt_bytes",
+            "diagnostics",
+            "input_metadata",
+        ] {
+            let mut invalid = value.clone();
+            invalid["record"][key] = json!("source canary");
+            assert!(!native_validator.is_valid(&invalid));
+        }
+        if kind == "migration_lifecycle_transition" {
+            let mut invalid = value.clone();
+            invalid["record"]["ordinal"] = json!("2");
+            assert!(!native_validator.is_valid(&invalid));
+        }
+    }
+}
+
+#[test]
+fn migration_lifecycle_actual_native_outputs_match_closed_contracts() {
+    let records: Vec<serde_json::Value> =
+        serde_json::from_str(include_str!("fixtures/migration-lifecycle-native.json")).unwrap();
+    assert_eq!(records.len(), 24);
+    for record in &records {
+        assert_valid(
+            &format!("{}.schema.json", record["schema_version"].as_str().unwrap()),
+            record,
+        );
+    }
+    let select = |version: &str| {
+        records
+            .iter()
+            .filter(|r| r["schema_version"] == version)
+            .collect::<Vec<_>>()
+    };
+    let results = select("agentdoc.cloud.migration_transition_result.v0");
+    let receipts = select("agentdoc.cloud.migration_transition_receipt.v0");
+    let commands = select("agentdoc.cloud.migration_transition_request.v0");
+    assert_eq!(results.len(), 6);
+    assert_eq!(receipts.len(), 6);
+    assert_eq!(commands.len(), 5);
+    let states = [
+        "prepared",
+        "snapshot_bound",
+        "importing",
+        "validated",
+        "awaiting_attestation",
+        "catching_up",
+    ];
+    for (i, receipt) in receipts.iter().enumerate() {
+        assert_eq!(receipt["ordinal"], (i + 1).to_string());
+        assert_eq!(receipt["to_state"], states[i]);
+        assert_eq!(receipt["scope"], receipts[0]["scope"]);
+        assert_eq!(receipt["initial_revision"], receipts[0]["initial_revision"]);
+        if i == 0 {
+            assert!(receipt["from_state"].is_null());
+            assert!(receipt["previous_receipt_digest"].is_null());
+            assert_eq!(receipt["transition_id"], receipt["migration_id"]);
+        } else {
+            assert_eq!(receipt["from_state"], states[i - 1]);
+            assert_eq!(
+                receipt["previous_receipt_digest"],
+                results[i - 1]["receipt_digest"]
+            );
+            assert_eq!(
+                commands[i - 1]["expected"]["ordinal"],
+                receipts[i - 1]["ordinal"]
+            );
+            assert_eq!(
+                commands[i - 1]["expected"]["receipt_digest"],
+                results[i - 1]["receipt_digest"]
+            );
+            assert_eq!(commands[i - 1]["evidence"], receipt["evidence"]);
+            assert_eq!(commands[i - 1]["transition_id"], receipt["transition_id"]);
+        }
+    }
+    let facts = select("agentdoc.cloud.export_native_fact.v0");
+    assert_eq!(facts.len(), 7);
+    let parents = facts
+        .iter()
+        .filter(|f| f["kind"] == "migration_lifecycle")
+        .collect::<Vec<_>>();
+    assert_eq!(parents.len(), 1);
+    let parent = &parents[0]["record"];
+    assert_eq!(parent["scope"], receipts[0]["scope"]);
+    assert_eq!(
+        parent["preparation_receipt_digest"],
+        receipts[0]["preparation_receipt_digest"]
+    );
+    assert_eq!(parent["preparation_validation"]["result"], "pass");
+    assert!(
+        parent["preparation_validation"]
+            .get("diagnostics")
+            .is_none()
+    );
+    assert!(parent.get("preparation_receipt_bytes").is_none());
+    let children = facts
+        .iter()
+        .filter(|f| f["kind"] == "migration_lifecycle_transition")
+        .collect::<Vec<_>>();
+    assert_eq!(children.len(), 6);
+    for child in children {
+        let record = &child["record"];
+        let i = record["ordinal"]
+            .as_str()
+            .unwrap()
+            .parse::<usize>()
+            .unwrap()
+            - 1;
+        assert_eq!(record["receipt_digest"], results[i]["receipt_digest"]);
+        assert_eq!(record["command_digest"], receipts[i]["command_digest"]);
+        assert_eq!(record["principal"], receipts[i]["principal_id"]);
+        assert_eq!(record["evidence"], receipts[i]["evidence"]);
+    }
+}

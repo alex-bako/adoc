@@ -189,6 +189,9 @@ The 13 `agentdoc.cloud.*` rows below whose owning slice is E5 also inventory imp
 | `agentdoc.cloud.migration_initialization_attestation.v0` | cloud | E7.1.T4 | immutable exact-command/qualification/human/session/authorization attestation; canonical native JSON plus newline defines digest; no verification assertion; schema and MCP resource published |
 | `agentdoc.cloud.migration_initialization_result.v0` | cloud | E7.1.T4 | retained attestation plus sorted native promotion/governance/initial-effectivity references preserving original Object ID and semantic hash; decimal sequence strings; native identity joins and authorization remain required; complete portable receipt and cutover remain downstream; schema and MCP resource published |
 | `agentdoc.cloud.migration_completion_receipt.v0` | cloud | E7.1.T5 | generated portable correspondence joining original request, qualification, human attestation and native promotion/governance/effectivity evidence; preserves original object bindings and semantic hashes; closed schema and MCP resource published; no activation authority |
+| `agentdoc.cloud.migration_transition_request.v0` | cloud | E7.2.T1 | closed expected-head command and evidence union; native admission owns adjacency and authorization; schema and MCP published |
+| `agentdoc.cloud.migration_transition_receipt.v0` | cloud | E7.2.T1 | exact append-only migration lifecycle receipt with frozen scope/revision, predecessor, native actor and evidence; no cutover or rollback by label alone; schema and MCP published |
+| `agentdoc.cloud.migration_transition_result.v0` | cloud | E7.2.T1 | closed exact receipt-byte base64 and SHA256 response; no parsed authoritative duplicate; schema and MCP published |
 <!-- /registry:envelopes-planned -->
 
 ## Diagnostic Codes — shipped, owner `adoc`
@@ -629,6 +632,7 @@ The pre-release implementation annotations mark only the ten code rows added by 
 | `privacy.export_limit_exceeded` | planned (E6.6.T5) | synchronous export exceeds the descriptor, decoded-byte, projection or archive bound; refuse explicitly without truncating a successful bundle |
 | `privacy.export_unavailable` | planned (E6.6.T5) | required export storage, locking, transport or auditing is unavailable; release no archive and expose no retained source bytes in diagnostics |
 | `privacy.export_invalid_envelope` | planned (E6.6.T5) | authorized retained JSON/object is malformed or its embedded self-digest binding is invalid; preserve the same omission fields with actual canonical-domain observed_digest when computable (possibly equal to claimed_digest), otherwise null; never substitute file SHA. Existing privacy.export_digest_mismatch continues to mean a computed non-null domain digest different from the claimed digest |
+| `migration.illegal_transition` | planned (E7.2.T1) | syntactically valid but unavailable/illegal migration state edge or unmet native evidence precondition; no state or authority advance |
 <!-- /registry:cloud-codes -->
 
 ## Attestation codes — planned, owner `cloud`
@@ -759,3 +763,22 @@ The closed K8 `required_at` stage vocabulary. Whether an obligation is informati
 | `connector_synchronization` |
 | `agent_action` |
 <!-- /registry:proof-obligation-stages -->
+
+## Migration lifecycle states — owner `cloud`
+
+E7.2.T1 publishes the RT-13 state vocabulary. Version1 implemented edges stop at catching_up or explicit failed; later readiness, atomic cutover and rollback require their real operations. These states are separate from Knowledge Object governance dimensions.
+
+<!-- registry:migration-lifecycle-states -->
+| state |
+| --- |
+| `prepared` |
+| `snapshot_bound` |
+| `importing` |
+| `validated` |
+| `awaiting_attestation` |
+| `catching_up` |
+| `ready_to_cutover` |
+| `cutover_committed` |
+| `rolled_back` |
+| `failed` |
+<!-- /registry:migration-lifecycle-states -->

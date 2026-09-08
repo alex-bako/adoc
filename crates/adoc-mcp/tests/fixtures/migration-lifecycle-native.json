@@ -1,0 +1,496 @@
+[
+  {
+    "receipt_digest": "sha256:6de5777ac99acfa199033fd0bdc06899f1f3430739afab7d1650164d6d9281bd",
+    "schema_version": "agentdoc.cloud.migration_transition_result.v0",
+    "receipt_bytes_base64": "eyJhdXRob3JpemF0aW9uX2RlY2lzaW9uX2lkIjoiOTMxZDMxMDUtMTY1ZC00ZTJiLWE5ZDUtMGUyYWQzYjRkZDM5IiwiY29tbWFuZF9kaWdlc3QiOiJzaGEyNTY6NmEwZWQ4ZGU0ODE3MDNmNmVmM2Q4OTYxMTcwNWJmY2U1MDhmMDFhYzUzNDI0MjAyNTk0M2Y4MmM5YTg1ZDZiMCIsImV2aWRlbmNlIjp7ImRpZ2VzdCI6InNoYTI1Njo3YTEyZDU0Y2I1N2NhZWFhYmRjYjU1ZDk5OTk0ZDNlMzE4MDEwZmJkOTljMzlhYjFiYWNmMzU5MjlmNzYxN2ZkIiwia2luZCI6InByZXBhcmF0aW9uIn0sImZyb21fc3RhdGUiOm51bGwsImluaXRpYWxfcmV2aXNpb24iOiIyODUzNWUyMjc1MDU5MmY1NDQwMmUzMTRlZTMzYmFjNDFmZTllYjA1Iiwiam9iX2RpZ2VzdCI6InNoYTI1NjoyYTE1MWI5MTYxMTBkYjg1NDViMTE0NzY3N2RjNDZkZDljYjIyMGFjMTEwZWUzZjcyODU3MzNjNTRkYTI4ZDQ0IiwibWlncmF0aW9uX2lkIjoiNWVmY2MzN2MtNjQyYS00NmU2LTgyNWQtZGQxYmEyMWNiMmU1Iiwib3JkaW5hbCI6IjEiLCJwcmVwYXJhdGlvbl9yZWNlaXB0X2RpZ2VzdCI6InNoYTI1Njo3YTEyZDU0Y2I1N2NhZWFhYmRjYjU1ZDk5OTk0ZDNlMzE4MDEwZmJkOTljMzlhYjFiYWNmMzU5MjlmNzYxN2ZkIiwicHJldmlvdXNfcmVjZWlwdF9kaWdlc3QiOm51bGwsInByaW5jaXBhbF9pZCI6IjNmMWE3NjZiLTM3ZTYtNDYxOS05MmIyLTlhNzU4NjQyMmU1OCIsInJlY29yZGVkX2F0IjoiMjAyNi0wOS0wOFQxODoxNDo0Ny4xODcxMTYrMDA6MDAiLCJyZXF1ZXN0X2RpZ2VzdCI6InNoYTI1NjowNmE1YzkwMjllMjBkMTA5Mzk0OGUwYjkzNWUyOGE3ZThjM2E2YjEyNWNmMDRjMmMwMTBkZGI4OGFlMTNlZjFjIiwic2NoZW1hX3ZlcnNpb24iOiJhZ2VudGRvYy5jbG91ZC5taWdyYXRpb25fdHJhbnNpdGlvbl9yZWNlaXB0LnYwIiwic2NvcGUiOnsiY29ubmVjdG9yX2lkIjoiZmE3OGZhODEtMDdlMS00NjQxLWIzOWQtYWVjNmIxMWEyYjY3IiwicmVzb3VyY2UiOnsiaWQiOiJyZXBvc2l0b3J5LTEiLCJraW5kIjoicmVwb3NpdG9yeSJ9LCJzb3VyY2VfY29udGFpbmVyX2lkIjoic291cmNlLTEiLCJ3b3Jrc3BhY2VfaWQiOiJhOWM5ZTY3Mi0zNjY1LTRjNjEtOGMxNi02M2RiMzliZjRiZWQifSwidG9fc3RhdGUiOiJwcmVwYXJlZCIsInRyYW5zaXRpb25faWQiOiI1ZWZjYzM3Yy02NDJhLTQ2ZTYtODI1ZC1kZDFiYTIxY2IyZTUiLCJ0cmFuc2l0aW9uX3BvbGljeV92ZXJzaW9uIjoiMSIsIndvcmtzcGFjZV9pZCI6ImE5YzllNjcyLTM2NjUtNGM2MS04YzE2LTYzZGIzOWJmNGJlZCJ9Cg=="
+  },
+  {
+    "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+    "command_digest": "sha256:6a0ed8de481703f6ef3d89611705bfce508f01ac534242025943f82c9a85d6b0",
+    "evidence": {
+      "digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+      "kind": "preparation"
+    },
+    "from_state": null,
+    "initial_revision": "28535e22750592f54402e314ee33bac41fe9eb05",
+    "job_digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "ordinal": "1",
+    "preparation_receipt_digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+    "previous_receipt_digest": null,
+    "principal_id": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+    "recorded_at": "2026-09-08T18:14:47.187116+00:00",
+    "request_digest": "sha256:06a5c9029e20d1093948e0b935e28a7e8c3a6b125cf04c2c010ddb88ae13ef1c",
+    "schema_version": "agentdoc.cloud.migration_transition_receipt.v0",
+    "scope": {
+      "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+      "resource": {
+        "id": "repository-1",
+        "kind": "repository"
+      },
+      "source_container_id": "source-1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "to_state": "prepared",
+    "transition_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "transition_policy_version": "1",
+    "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+  },
+  {
+    "receipt_digest": "sha256:a4563e4f0e0ae7f42a11866de80e42b59694083818755cc0a2a69e027b7f78f0",
+    "schema_version": "agentdoc.cloud.migration_transition_result.v0",
+    "receipt_bytes_base64": "eyJhdXRob3JpemF0aW9uX2RlY2lzaW9uX2lkIjoiOTMxZDMxMDUtMTY1ZC00ZTJiLWE5ZDUtMGUyYWQzYjRkZDM5IiwiY29tbWFuZF9kaWdlc3QiOiJzaGEyNTY6OTgzYzRlMTUyMmM1N2I0MmViNDhiYzBjMzUxZTkyZjc3MzE1MTcwYmQzZmQ5MGQ5MmRhZTYwOTk2ZGFjY2ZlOSIsImV2aWRlbmNlIjp7ImRpZ2VzdCI6InNoYTI1Njo3YTEyZDU0Y2I1N2NhZWFhYmRjYjU1ZDk5OTk0ZDNlMzE4MDEwZmJkOTljMzlhYjFiYWNmMzU5MjlmNzYxN2ZkIiwia2luZCI6InByZXBhcmF0aW9uIn0sImZyb21fc3RhdGUiOiJwcmVwYXJlZCIsImluaXRpYWxfcmV2aXNpb24iOiIyODUzNWUyMjc1MDU5MmY1NDQwMmUzMTRlZTMzYmFjNDFmZTllYjA1Iiwiam9iX2RpZ2VzdCI6InNoYTI1NjoyYTE1MWI5MTYxMTBkYjg1NDViMTE0NzY3N2RjNDZkZDljYjIyMGFjMTEwZWUzZjcyODU3MzNjNTRkYTI4ZDQ0IiwibWlncmF0aW9uX2lkIjoiNWVmY2MzN2MtNjQyYS00NmU2LTgyNWQtZGQxYmEyMWNiMmU1Iiwib3JkaW5hbCI6IjIiLCJwcmVwYXJhdGlvbl9yZWNlaXB0X2RpZ2VzdCI6InNoYTI1Njo3YTEyZDU0Y2I1N2NhZWFhYmRjYjU1ZDk5OTk0ZDNlMzE4MDEwZmJkOTljMzlhYjFiYWNmMzU5MjlmNzYxN2ZkIiwicHJldmlvdXNfcmVjZWlwdF9kaWdlc3QiOiJzaGEyNTY6NmRlNTc3N2FjOTlhY2ZhMTk5MDMzZmQwYmRjMDY4OTlmMWYzNDMwNzM5YWZhYjdkMTY1MDE2NGQ2ZDkyODFiZCIsInByaW5jaXBhbF9pZCI6IjNmMWE3NjZiLTM3ZTYtNDYxOS05MmIyLTlhNzU4NjQyMmU1OCIsInJlY29yZGVkX2F0IjoiMjAyNi0wOS0wOFQxODoxNDo0Ny4yNDU1NTErMDA6MDAiLCJyZXF1ZXN0X2RpZ2VzdCI6InNoYTI1NjowNmE1YzkwMjllMjBkMTA5Mzk0OGUwYjkzNWUyOGE3ZThjM2E2YjEyNWNmMDRjMmMwMTBkZGI4OGFlMTNlZjFjIiwic2NoZW1hX3ZlcnNpb24iOiJhZ2VudGRvYy5jbG91ZC5taWdyYXRpb25fdHJhbnNpdGlvbl9yZWNlaXB0LnYwIiwic2NvcGUiOnsiY29ubmVjdG9yX2lkIjoiZmE3OGZhODEtMDdlMS00NjQxLWIzOWQtYWVjNmIxMWEyYjY3IiwicmVzb3VyY2UiOnsiaWQiOiJyZXBvc2l0b3J5LTEiLCJraW5kIjoicmVwb3NpdG9yeSJ9LCJzb3VyY2VfY29udGFpbmVyX2lkIjoic291cmNlLTEiLCJ3b3Jrc3BhY2VfaWQiOiJhOWM5ZTY3Mi0zNjY1LTRjNjEtOGMxNi02M2RiMzliZjRiZWQifSwidG9fc3RhdGUiOiJzbmFwc2hvdF9ib3VuZCIsInRyYW5zaXRpb25faWQiOiJhOTAwOWMyMC1lMTA1LTRkZjAtYmE3Yy1iMTJlOWI1OTBjNDAiLCJ0cmFuc2l0aW9uX3BvbGljeV92ZXJzaW9uIjoiMSIsIndvcmtzcGFjZV9pZCI6ImE5YzllNjcyLTM2NjUtNGM2MS04YzE2LTYzZGIzOWJmNGJlZCJ9Cg=="
+  },
+  {
+    "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+    "command_digest": "sha256:983c4e1522c57b42eb48bc0c351e92f77315170bd3fd90d92dae60996daccfe9",
+    "evidence": {
+      "digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+      "kind": "preparation"
+    },
+    "from_state": "prepared",
+    "initial_revision": "28535e22750592f54402e314ee33bac41fe9eb05",
+    "job_digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "ordinal": "2",
+    "preparation_receipt_digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+    "previous_receipt_digest": "sha256:6de5777ac99acfa199033fd0bdc06899f1f3430739afab7d1650164d6d9281bd",
+    "principal_id": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+    "recorded_at": "2026-09-08T18:14:47.245551+00:00",
+    "request_digest": "sha256:06a5c9029e20d1093948e0b935e28a7e8c3a6b125cf04c2c010ddb88ae13ef1c",
+    "schema_version": "agentdoc.cloud.migration_transition_receipt.v0",
+    "scope": {
+      "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+      "resource": {
+        "id": "repository-1",
+        "kind": "repository"
+      },
+      "source_container_id": "source-1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "to_state": "snapshot_bound",
+    "transition_id": "a9009c20-e105-4df0-ba7c-b12e9b590c40",
+    "transition_policy_version": "1",
+    "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+  },
+  {
+    "schema_version": "agentdoc.cloud.migration_transition_request.v0",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "transition_id": "a9009c20-e105-4df0-ba7c-b12e9b590c40",
+    "expected": {
+      "ordinal": "1",
+      "receipt_digest": "sha256:6de5777ac99acfa199033fd0bdc06899f1f3430739afab7d1650164d6d9281bd"
+    },
+    "to_state": "snapshot_bound",
+    "evidence": {
+      "kind": "preparation",
+      "digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd"
+    }
+  },
+  {
+    "receipt_digest": "sha256:07c976cc8dc93e9958fe9ad51c2e05af536f502b5442e2c8d8b9165cb9341fb5",
+    "schema_version": "agentdoc.cloud.migration_transition_result.v0",
+    "receipt_bytes_base64": "eyJhdXRob3JpemF0aW9uX2RlY2lzaW9uX2lkIjoiOTMxZDMxMDUtMTY1ZC00ZTJiLWE5ZDUtMGUyYWQzYjRkZDM5IiwiY29tbWFuZF9kaWdlc3QiOiJzaGEyNTY6NDY2ZTlhNjc0NGI5NzRiNDIzODBlNGIyZDk5YmZjMGNiMmRiMzJmMjM5YzA5MjU4YTZkNmVhMTJhNzZmM2M2NiIsImV2aWRlbmNlIjp7ImRpZ2VzdCI6InNoYTI1NjoyYTE1MWI5MTYxMTBkYjg1NDViMTE0NzY3N2RjNDZkZDljYjIyMGFjMTEwZWUzZjcyODU3MzNjNTRkYTI4ZDQ0Iiwia2luZCI6ImltcG9ydF9qb2IifSwiZnJvbV9zdGF0ZSI6InNuYXBzaG90X2JvdW5kIiwiaW5pdGlhbF9yZXZpc2lvbiI6IjI4NTM1ZTIyNzUwNTkyZjU0NDAyZTMxNGVlMzNiYWM0MWZlOWViMDUiLCJqb2JfZGlnZXN0Ijoic2hhMjU2OjJhMTUxYjkxNjExMGRiODU0NWIxMTQ3Njc3ZGM0NmRkOWNiMjIwYWMxMTBlZTNmNzI4NTczM2M1NGRhMjhkNDQiLCJtaWdyYXRpb25faWQiOiI1ZWZjYzM3Yy02NDJhLTQ2ZTYtODI1ZC1kZDFiYTIxY2IyZTUiLCJvcmRpbmFsIjoiMyIsInByZXBhcmF0aW9uX3JlY2VpcHRfZGlnZXN0Ijoic2hhMjU2OjdhMTJkNTRjYjU3Y2FlYWFiZGNiNTVkOTk5OTRkM2UzMTgwMTBmYmQ5OWMzOWFiMWJhY2YzNTkyOWY3NjE3ZmQiLCJwcmV2aW91c19yZWNlaXB0X2RpZ2VzdCI6InNoYTI1NjphNDU2M2U0ZjBlMGFlN2Y0MmExMTg2NmRlODBlNDJiNTk2OTQwODM4MTg3NTVjYzBhMmE2OWUwMjdiN2Y3OGYwIiwicHJpbmNpcGFsX2lkIjoiM2YxYTc2NmItMzdlNi00NjE5LTkyYjItOWE3NTg2NDIyZTU4IiwicmVjb3JkZWRfYXQiOiIyMDI2LTA5LTA4VDE4OjE0OjQ3LjI5ODY5NiswMDowMCIsInJlcXVlc3RfZGlnZXN0Ijoic2hhMjU2OjA2YTVjOTAyOWUyMGQxMDkzOTQ4ZTBiOTM1ZTI4YTdlOGMzYTZiMTI1Y2YwNGMyYzAxMGRkYjg4YWUxM2VmMWMiLCJzY2hlbWFfdmVyc2lvbiI6ImFnZW50ZG9jLmNsb3VkLm1pZ3JhdGlvbl90cmFuc2l0aW9uX3JlY2VpcHQudjAiLCJzY29wZSI6eyJjb25uZWN0b3JfaWQiOiJmYTc4ZmE4MS0wN2UxLTQ2NDEtYjM5ZC1hZWM2YjExYTJiNjciLCJyZXNvdXJjZSI6eyJpZCI6InJlcG9zaXRvcnktMSIsImtpbmQiOiJyZXBvc2l0b3J5In0sInNvdXJjZV9jb250YWluZXJfaWQiOiJzb3VyY2UtMSIsIndvcmtzcGFjZV9pZCI6ImE5YzllNjcyLTM2NjUtNGM2MS04YzE2LTYzZGIzOWJmNGJlZCJ9LCJ0b19zdGF0ZSI6ImltcG9ydGluZyIsInRyYW5zaXRpb25faWQiOiJkYWIwMzFiOS01NjhlLTRiZDUtOTc5Ny0yYWY2NTcxMWI3YTIiLCJ0cmFuc2l0aW9uX3BvbGljeV92ZXJzaW9uIjoiMSIsIndvcmtzcGFjZV9pZCI6ImE5YzllNjcyLTM2NjUtNGM2MS04YzE2LTYzZGIzOWJmNGJlZCJ9Cg=="
+  },
+  {
+    "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+    "command_digest": "sha256:466e9a6744b974b42380e4b2d99bfc0cb2db32f239c09258a6d6ea12a76f3c66",
+    "evidence": {
+      "digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+      "kind": "import_job"
+    },
+    "from_state": "snapshot_bound",
+    "initial_revision": "28535e22750592f54402e314ee33bac41fe9eb05",
+    "job_digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "ordinal": "3",
+    "preparation_receipt_digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+    "previous_receipt_digest": "sha256:a4563e4f0e0ae7f42a11866de80e42b59694083818755cc0a2a69e027b7f78f0",
+    "principal_id": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+    "recorded_at": "2026-09-08T18:14:47.298696+00:00",
+    "request_digest": "sha256:06a5c9029e20d1093948e0b935e28a7e8c3a6b125cf04c2c010ddb88ae13ef1c",
+    "schema_version": "agentdoc.cloud.migration_transition_receipt.v0",
+    "scope": {
+      "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+      "resource": {
+        "id": "repository-1",
+        "kind": "repository"
+      },
+      "source_container_id": "source-1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "to_state": "importing",
+    "transition_id": "dab031b9-568e-4bd5-9797-2af65711b7a2",
+    "transition_policy_version": "1",
+    "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+  },
+  {
+    "schema_version": "agentdoc.cloud.migration_transition_request.v0",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "transition_id": "dab031b9-568e-4bd5-9797-2af65711b7a2",
+    "expected": {
+      "ordinal": "2",
+      "receipt_digest": "sha256:a4563e4f0e0ae7f42a11866de80e42b59694083818755cc0a2a69e027b7f78f0"
+    },
+    "to_state": "importing",
+    "evidence": {
+      "kind": "import_job",
+      "digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44"
+    }
+  },
+  {
+    "receipt_digest": "sha256:9e718aff331ee79ba8c3359d1e8d88e41902a199b871e563d4460141c04581af",
+    "schema_version": "agentdoc.cloud.migration_transition_result.v0",
+    "receipt_bytes_base64": "eyJhdXRob3JpemF0aW9uX2RlY2lzaW9uX2lkIjoiOTMxZDMxMDUtMTY1ZC00ZTJiLWE5ZDUtMGUyYWQzYjRkZDM5IiwiY29tbWFuZF9kaWdlc3QiOiJzaGEyNTY6NjBjMTBlM2E2NWUwMTcwNGQ2MTY2Y2NmNTE0YTdiNjkxNzY5NGY0NTI0ZWQ4YWJlMjE2YThhMjllYTc1ZWZmNSIsImV2aWRlbmNlIjp7ImVudmVsb3BlX2RpZ2VzdCI6InNoYTI1NjphN2U1MGIzMjc0YWFmYzBhYWUwYzhhOTE1ZDBkOWQ3MzJkYjEzNzg4MWY4MWMyYzI1ODEzNGY0OTA5Y2IwYWM3Iiwia2luZCI6InF1YWxpZmljYXRpb24iLCJxdWFsaWZpY2F0aW9uX2lkIjoiNGYwZWMzMTQtZThjNi00ZTUzLTg3YjAtNzllZGZmNTQ0NmNjIn0sImZyb21fc3RhdGUiOiJpbXBvcnRpbmciLCJpbml0aWFsX3JldmlzaW9uIjoiMjg1MzVlMjI3NTA1OTJmNTQ0MDJlMzE0ZWUzM2JhYzQxZmU5ZWIwNSIsImpvYl9kaWdlc3QiOiJzaGEyNTY6MmExNTFiOTE2MTEwZGI4NTQ1YjExNDc2NzdkYzQ2ZGQ5Y2IyMjBhYzExMGVlM2Y3Mjg1NzMzYzU0ZGEyOGQ0NCIsIm1pZ3JhdGlvbl9pZCI6IjVlZmNjMzdjLTY0MmEtNDZlNi04MjVkLWRkMWJhMjFjYjJlNSIsIm9yZGluYWwiOiI0IiwicHJlcGFyYXRpb25fcmVjZWlwdF9kaWdlc3QiOiJzaGEyNTY6N2ExMmQ1NGNiNTdjYWVhYWJkY2I1NWQ5OTk5NGQzZTMxODAxMGZiZDk5YzM5YWIxYmFjZjM1OTI5Zjc2MTdmZCIsInByZXZpb3VzX3JlY2VpcHRfZGlnZXN0Ijoic2hhMjU2OjA3Yzk3NmNjOGRjOTNlOTk1OGZlOWFkNTFjMmUwNWFmNTM2ZjUwMmI1NDQyZTJjOGQ4YjkxNjVjYjkzNDFmYjUiLCJwcmluY2lwYWxfaWQiOiIzZjFhNzY2Yi0zN2U2LTQ2MTktOTJiMi05YTc1ODY0MjJlNTgiLCJyZWNvcmRlZF9hdCI6IjIwMjYtMDktMDhUMTg6MTQ6NDcuMzYwNTUzKzAwOjAwIiwicmVxdWVzdF9kaWdlc3QiOiJzaGEyNTY6MDZhNWM5MDI5ZTIwZDEwOTM5NDhlMGI5MzVlMjhhN2U4YzNhNmIxMjVjZjA0YzJjMDEwZGRiODhhZTEzZWYxYyIsInNjaGVtYV92ZXJzaW9uIjoiYWdlbnRkb2MuY2xvdWQubWlncmF0aW9uX3RyYW5zaXRpb25fcmVjZWlwdC52MCIsInNjb3BlIjp7ImNvbm5lY3Rvcl9pZCI6ImZhNzhmYTgxLTA3ZTEtNDY0MS1iMzlkLWFlYzZiMTFhMmI2NyIsInJlc291cmNlIjp7ImlkIjoicmVwb3NpdG9yeS0xIiwia2luZCI6InJlcG9zaXRvcnkifSwic291cmNlX2NvbnRhaW5lcl9pZCI6InNvdXJjZS0xIiwid29ya3NwYWNlX2lkIjoiYTljOWU2NzItMzY2NS00YzYxLThjMTYtNjNkYjM5YmY0YmVkIn0sInRvX3N0YXRlIjoidmFsaWRhdGVkIiwidHJhbnNpdGlvbl9pZCI6IjYzY2MzY2YwLTcyOGUtNDBlNC04ZGE1LWFlZDJkMjhiMWQ5MyIsInRyYW5zaXRpb25fcG9saWN5X3ZlcnNpb24iOiIxIiwid29ya3NwYWNlX2lkIjoiYTljOWU2NzItMzY2NS00YzYxLThjMTYtNjNkYjM5YmY0YmVkIn0K"
+  },
+  {
+    "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+    "command_digest": "sha256:60c10e3a65e01704d6166ccf514a7b6917694f4524ed8abe216a8a29ea75eff5",
+    "evidence": {
+      "envelope_digest": "sha256:a7e50b3274aafc0aae0c8a915d0d9d732db137881f81c2c258134f4909cb0ac7",
+      "kind": "qualification",
+      "qualification_id": "4f0ec314-e8c6-4e53-87b0-79edff5446cc"
+    },
+    "from_state": "importing",
+    "initial_revision": "28535e22750592f54402e314ee33bac41fe9eb05",
+    "job_digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "ordinal": "4",
+    "preparation_receipt_digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+    "previous_receipt_digest": "sha256:07c976cc8dc93e9958fe9ad51c2e05af536f502b5442e2c8d8b9165cb9341fb5",
+    "principal_id": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+    "recorded_at": "2026-09-08T18:14:47.360553+00:00",
+    "request_digest": "sha256:06a5c9029e20d1093948e0b935e28a7e8c3a6b125cf04c2c010ddb88ae13ef1c",
+    "schema_version": "agentdoc.cloud.migration_transition_receipt.v0",
+    "scope": {
+      "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+      "resource": {
+        "id": "repository-1",
+        "kind": "repository"
+      },
+      "source_container_id": "source-1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "to_state": "validated",
+    "transition_id": "63cc3cf0-728e-40e4-8da5-aed2d28b1d93",
+    "transition_policy_version": "1",
+    "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+  },
+  {
+    "schema_version": "agentdoc.cloud.migration_transition_request.v0",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "transition_id": "63cc3cf0-728e-40e4-8da5-aed2d28b1d93",
+    "expected": {
+      "ordinal": "3",
+      "receipt_digest": "sha256:07c976cc8dc93e9958fe9ad51c2e05af536f502b5442e2c8d8b9165cb9341fb5"
+    },
+    "to_state": "validated",
+    "evidence": {
+      "kind": "qualification",
+      "qualification_id": "4f0ec314-e8c6-4e53-87b0-79edff5446cc",
+      "envelope_digest": "sha256:a7e50b3274aafc0aae0c8a915d0d9d732db137881f81c2c258134f4909cb0ac7"
+    }
+  },
+  {
+    "receipt_digest": "sha256:4dc60ba29cc4f7b0e1c4359b09726dd5762a01441f75bfd52389ccd26d627160",
+    "schema_version": "agentdoc.cloud.migration_transition_result.v0",
+    "receipt_bytes_base64": "eyJhdXRob3JpemF0aW9uX2RlY2lzaW9uX2lkIjoiOTMxZDMxMDUtMTY1ZC00ZTJiLWE5ZDUtMGUyYWQzYjRkZDM5IiwiY29tbWFuZF9kaWdlc3QiOiJzaGEyNTY6Y2I0YTIzODFjNTgyZjdlN2E3ZmVlNzlkZjdlNWUxZWE5ZTE1OWQ1MmVjMzZhMmE2N2RlYWI5YWNjZWVkNTg4NiIsImV2aWRlbmNlIjp7ImVudmVsb3BlX2RpZ2VzdCI6InNoYTI1NjphN2U1MGIzMjc0YWFmYzBhYWUwYzhhOTE1ZDBkOWQ3MzJkYjEzNzg4MWY4MWMyYzI1ODEzNGY0OTA5Y2IwYWM3Iiwia2luZCI6InF1YWxpZmljYXRpb24iLCJxdWFsaWZpY2F0aW9uX2lkIjoiNGYwZWMzMTQtZThjNi00ZTUzLTg3YjAtNzllZGZmNTQ0NmNjIn0sImZyb21fc3RhdGUiOiJ2YWxpZGF0ZWQiLCJpbml0aWFsX3JldmlzaW9uIjoiMjg1MzVlMjI3NTA1OTJmNTQ0MDJlMzE0ZWUzM2JhYzQxZmU5ZWIwNSIsImpvYl9kaWdlc3QiOiJzaGEyNTY6MmExNTFiOTE2MTEwZGI4NTQ1YjExNDc2NzdkYzQ2ZGQ5Y2IyMjBhYzExMGVlM2Y3Mjg1NzMzYzU0ZGEyOGQ0NCIsIm1pZ3JhdGlvbl9pZCI6IjVlZmNjMzdjLTY0MmEtNDZlNi04MjVkLWRkMWJhMjFjYjJlNSIsIm9yZGluYWwiOiI1IiwicHJlcGFyYXRpb25fcmVjZWlwdF9kaWdlc3QiOiJzaGEyNTY6N2ExMmQ1NGNiNTdjYWVhYWJkY2I1NWQ5OTk5NGQzZTMxODAxMGZiZDk5YzM5YWIxYmFjZjM1OTI5Zjc2MTdmZCIsInByZXZpb3VzX3JlY2VpcHRfZGlnZXN0Ijoic2hhMjU2OjllNzE4YWZmMzMxZWU3OWJhOGMzMzU5ZDFlOGQ4OGU0MTkwMmExOTliODcxZTU2M2Q0NDYwMTQxYzA0NTgxYWYiLCJwcmluY2lwYWxfaWQiOiIzZjFhNzY2Yi0zN2U2LTQ2MTktOTJiMi05YTc1ODY0MjJlNTgiLCJyZWNvcmRlZF9hdCI6IjIwMjYtMDktMDhUMTg6MTQ6NDcuNDIwMzA0KzAwOjAwIiwicmVxdWVzdF9kaWdlc3QiOiJzaGEyNTY6MDZhNWM5MDI5ZTIwZDEwOTM5NDhlMGI5MzVlMjhhN2U4YzNhNmIxMjVjZjA0YzJjMDEwZGRiODhhZTEzZWYxYyIsInNjaGVtYV92ZXJzaW9uIjoiYWdlbnRkb2MuY2xvdWQubWlncmF0aW9uX3RyYW5zaXRpb25fcmVjZWlwdC52MCIsInNjb3BlIjp7ImNvbm5lY3Rvcl9pZCI6ImZhNzhmYTgxLTA3ZTEtNDY0MS1iMzlkLWFlYzZiMTFhMmI2NyIsInJlc291cmNlIjp7ImlkIjoicmVwb3NpdG9yeS0xIiwia2luZCI6InJlcG9zaXRvcnkifSwic291cmNlX2NvbnRhaW5lcl9pZCI6InNvdXJjZS0xIiwid29ya3NwYWNlX2lkIjoiYTljOWU2NzItMzY2NS00YzYxLThjMTYtNjNkYjM5YmY0YmVkIn0sInRvX3N0YXRlIjoiYXdhaXRpbmdfYXR0ZXN0YXRpb24iLCJ0cmFuc2l0aW9uX2lkIjoiZGFkOGEyMWEtNzhiMi00MDAyLTk2OWMtNjY5YjllNWM1YTU5IiwidHJhbnNpdGlvbl9wb2xpY3lfdmVyc2lvbiI6IjEiLCJ3b3Jrc3BhY2VfaWQiOiJhOWM5ZTY3Mi0zNjY1LTRjNjEtOGMxNi02M2RiMzliZjRiZWQifQo="
+  },
+  {
+    "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+    "command_digest": "sha256:cb4a2381c582f7e7a7fee79df7e5e1ea9e159d52ec36a2a67deab9acceed5886",
+    "evidence": {
+      "envelope_digest": "sha256:a7e50b3274aafc0aae0c8a915d0d9d732db137881f81c2c258134f4909cb0ac7",
+      "kind": "qualification",
+      "qualification_id": "4f0ec314-e8c6-4e53-87b0-79edff5446cc"
+    },
+    "from_state": "validated",
+    "initial_revision": "28535e22750592f54402e314ee33bac41fe9eb05",
+    "job_digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "ordinal": "5",
+    "preparation_receipt_digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+    "previous_receipt_digest": "sha256:9e718aff331ee79ba8c3359d1e8d88e41902a199b871e563d4460141c04581af",
+    "principal_id": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+    "recorded_at": "2026-09-08T18:14:47.420304+00:00",
+    "request_digest": "sha256:06a5c9029e20d1093948e0b935e28a7e8c3a6b125cf04c2c010ddb88ae13ef1c",
+    "schema_version": "agentdoc.cloud.migration_transition_receipt.v0",
+    "scope": {
+      "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+      "resource": {
+        "id": "repository-1",
+        "kind": "repository"
+      },
+      "source_container_id": "source-1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "to_state": "awaiting_attestation",
+    "transition_id": "dad8a21a-78b2-4002-969c-669b9e5c5a59",
+    "transition_policy_version": "1",
+    "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+  },
+  {
+    "schema_version": "agentdoc.cloud.migration_transition_request.v0",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "transition_id": "dad8a21a-78b2-4002-969c-669b9e5c5a59",
+    "expected": {
+      "ordinal": "4",
+      "receipt_digest": "sha256:9e718aff331ee79ba8c3359d1e8d88e41902a199b871e563d4460141c04581af"
+    },
+    "to_state": "awaiting_attestation",
+    "evidence": {
+      "kind": "qualification",
+      "qualification_id": "4f0ec314-e8c6-4e53-87b0-79edff5446cc",
+      "envelope_digest": "sha256:a7e50b3274aafc0aae0c8a915d0d9d732db137881f81c2c258134f4909cb0ac7"
+    }
+  },
+  {
+    "receipt_digest": "sha256:d2fc6eaf8900ad32fa390f4d9a13b904dfeec45005a0013751e52aff516fd9c9",
+    "schema_version": "agentdoc.cloud.migration_transition_result.v0",
+    "receipt_bytes_base64": "eyJhdXRob3JpemF0aW9uX2RlY2lzaW9uX2lkIjoiOTMxZDMxMDUtMTY1ZC00ZTJiLWE5ZDUtMGUyYWQzYjRkZDM5IiwiY29tbWFuZF9kaWdlc3QiOiJzaGEyNTY6Yjg3Nzk2YTQ2Mzg5YzkzMjQ4ZWU1NjI0MDViZjI2YzhmNDEzZTg4N2Q3NzE1NGNlMzVhMjNjYmQ1YjRjMWI0NyIsImV2aWRlbmNlIjp7ImF0dGVzdGF0aW9uX2RpZ2VzdCI6InNoYTI1NjpmMzM3NGJmMDE5MmQyZmMxNzE0M2FjYTRiMmY2MDQ2NjJmOGM3NzNhNTg4YzdmMjNhOGY5NDVkNzFhMTk3MDAyIiwiaW5pdGlhbGl6YXRpb25faWQiOiJkYjk4ZjhkZi05ZjIyLTRiZTgtODcwMS1iZjUwM2ZjZjNjOTciLCJraW5kIjoiaW5pdGlhbGl6YXRpb24ifSwiZnJvbV9zdGF0ZSI6ImF3YWl0aW5nX2F0dGVzdGF0aW9uIiwiaW5pdGlhbF9yZXZpc2lvbiI6IjI4NTM1ZTIyNzUwNTkyZjU0NDAyZTMxNGVlMzNiYWM0MWZlOWViMDUiLCJqb2JfZGlnZXN0Ijoic2hhMjU2OjJhMTUxYjkxNjExMGRiODU0NWIxMTQ3Njc3ZGM0NmRkOWNiMjIwYWMxMTBlZTNmNzI4NTczM2M1NGRhMjhkNDQiLCJtaWdyYXRpb25faWQiOiI1ZWZjYzM3Yy02NDJhLTQ2ZTYtODI1ZC1kZDFiYTIxY2IyZTUiLCJvcmRpbmFsIjoiNiIsInByZXBhcmF0aW9uX3JlY2VpcHRfZGlnZXN0Ijoic2hhMjU2OjdhMTJkNTRjYjU3Y2FlYWFiZGNiNTVkOTk5OTRkM2UzMTgwMTBmYmQ5OWMzOWFiMWJhY2YzNTkyOWY3NjE3ZmQiLCJwcmV2aW91c19yZWNlaXB0X2RpZ2VzdCI6InNoYTI1Njo0ZGM2MGJhMjljYzRmN2IwZTFjNDM1OWIwOTcyNmRkNTc2MmEwMTQ0MWY3NWJmZDUyMzg5Y2NkMjZkNjI3MTYwIiwicHJpbmNpcGFsX2lkIjoiM2YxYTc2NmItMzdlNi00NjE5LTkyYjItOWE3NTg2NDIyZTU4IiwicmVjb3JkZWRfYXQiOiIyMDI2LTA5LTA4VDE4OjE0OjQ3Ljc4MTc2NSswMDowMCIsInJlcXVlc3RfZGlnZXN0Ijoic2hhMjU2OjA2YTVjOTAyOWUyMGQxMDkzOTQ4ZTBiOTM1ZTI4YTdlOGMzYTZiMTI1Y2YwNGMyYzAxMGRkYjg4YWUxM2VmMWMiLCJzY2hlbWFfdmVyc2lvbiI6ImFnZW50ZG9jLmNsb3VkLm1pZ3JhdGlvbl90cmFuc2l0aW9uX3JlY2VpcHQudjAiLCJzY29wZSI6eyJjb25uZWN0b3JfaWQiOiJmYTc4ZmE4MS0wN2UxLTQ2NDEtYjM5ZC1hZWM2YjExYTJiNjciLCJyZXNvdXJjZSI6eyJpZCI6InJlcG9zaXRvcnktMSIsImtpbmQiOiJyZXBvc2l0b3J5In0sInNvdXJjZV9jb250YWluZXJfaWQiOiJzb3VyY2UtMSIsIndvcmtzcGFjZV9pZCI6ImE5YzllNjcyLTM2NjUtNGM2MS04YzE2LTYzZGIzOWJmNGJlZCJ9LCJ0b19zdGF0ZSI6ImNhdGNoaW5nX3VwIiwidHJhbnNpdGlvbl9pZCI6IjA2NTc3NzEzLTc1ZTItNDk1OS1hNmM5LTI0NTNjY2FlMWI3OSIsInRyYW5zaXRpb25fcG9saWN5X3ZlcnNpb24iOiIxIiwid29ya3NwYWNlX2lkIjoiYTljOWU2NzItMzY2NS00YzYxLThjMTYtNjNkYjM5YmY0YmVkIn0K"
+  },
+  {
+    "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+    "command_digest": "sha256:b87796a46389c93248ee562405bf26c8f413e887d77154ce35a23cbd5b4c1b47",
+    "evidence": {
+      "attestation_digest": "sha256:f3374bf0192d2fc17143aca4b2f604662f8c773a588c7f23a8f945d71a197002",
+      "initialization_id": "db98f8df-9f22-4be8-8701-bf503fcf3c97",
+      "kind": "initialization"
+    },
+    "from_state": "awaiting_attestation",
+    "initial_revision": "28535e22750592f54402e314ee33bac41fe9eb05",
+    "job_digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "ordinal": "6",
+    "preparation_receipt_digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+    "previous_receipt_digest": "sha256:4dc60ba29cc4f7b0e1c4359b09726dd5762a01441f75bfd52389ccd26d627160",
+    "principal_id": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+    "recorded_at": "2026-09-08T18:14:47.781765+00:00",
+    "request_digest": "sha256:06a5c9029e20d1093948e0b935e28a7e8c3a6b125cf04c2c010ddb88ae13ef1c",
+    "schema_version": "agentdoc.cloud.migration_transition_receipt.v0",
+    "scope": {
+      "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+      "resource": {
+        "id": "repository-1",
+        "kind": "repository"
+      },
+      "source_container_id": "source-1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "to_state": "catching_up",
+    "transition_id": "06577713-75e2-4959-a6c9-2453ccae1b79",
+    "transition_policy_version": "1",
+    "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+  },
+  {
+    "schema_version": "agentdoc.cloud.migration_transition_request.v0",
+    "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+    "transition_id": "06577713-75e2-4959-a6c9-2453ccae1b79",
+    "expected": {
+      "ordinal": "5",
+      "receipt_digest": "sha256:4dc60ba29cc4f7b0e1c4359b09726dd5762a01441f75bfd52389ccd26d627160"
+    },
+    "to_state": "catching_up",
+    "evidence": {
+      "kind": "initialization",
+      "initialization_id": "db98f8df-9f22-4be8-8701-bf503fcf3c97",
+      "attestation_digest": "sha256:f3374bf0192d2fc17143aca4b2f604662f8c773a588c7f23a8f945d71a197002"
+    }
+  },
+  {
+    "kind": "migration_lifecycle",
+    "record": {
+      "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+      "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+      "created_at": "2026-09-08T18:14:47.155609+00:00",
+      "initial_revision": "28535e22750592f54402e314ee33bac41fe9eb05",
+      "job_digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+      "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "preparation_receipt_digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+      "preparation_validation": {
+        "context": [
+          {
+            "digest": "sha256:8b3e2fa42eccfceb2d3f477bc26d14686a5e79a34e825c166bbcdfbd4adbb87d",
+            "name": "config"
+          }
+        ],
+        "contract_versions": {
+          "graph": "adoc.graph.v6"
+        },
+        "diagnostics_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "evaluation_date": "2026-09-08",
+        "inputs": [
+          {
+            "digest": "sha256:f77f5007470c424058f47170a0eea6ff3c90f384ca700100c8bf95fcd28918ea",
+            "path": "docs/index.adoc"
+          },
+          {
+            "digest": "sha256:fcf684a817ca35112bcde29350a198c53d2a70b507a78f13de354103fd93039a",
+            "path": "docs/second.adoc"
+          }
+        ],
+        "result": "pass",
+        "runtime": {
+          "binary_digest": "sha256:8c9093250e761f7d772a95c64ce2b4825388a5b6a3ccf3207e5c6c8d0308eda5",
+          "version": "0.4.0"
+        },
+        "schema_version": "adoc.validation_receipt.v0"
+      },
+      "principal": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+      "request_digest": "sha256:06a5c9029e20d1093948e0b935e28a7e8c3a6b125cf04c2c010ddb88ae13ef1c",
+      "scope": {
+        "connector_id": "fa78fa81-07e1-4641-b39d-aec6b11a2b67",
+        "resource": {
+          "id": "repository-1",
+          "kind": "repository"
+        },
+        "source_container_id": "source-1",
+        "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+      },
+      "source_request_id": "75ebf94c-91b4-459d-b656-aceffe5b24c7",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_lifecycle_transition",
+    "record": {
+      "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+      "command_digest": "sha256:b87796a46389c93248ee562405bf26c8f413e887d77154ce35a23cbd5b4c1b47",
+      "evidence": {
+        "attestation_digest": "sha256:f3374bf0192d2fc17143aca4b2f604662f8c773a588c7f23a8f945d71a197002",
+        "initialization_id": "db98f8df-9f22-4be8-8701-bf503fcf3c97",
+        "kind": "initialization"
+      },
+      "from_state": "awaiting_attestation",
+      "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "ordinal": "6",
+      "previous_receipt_digest": "sha256:4dc60ba29cc4f7b0e1c4359b09726dd5762a01441f75bfd52389ccd26d627160",
+      "principal": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+      "receipt_digest": "sha256:d2fc6eaf8900ad32fa390f4d9a13b904dfeec45005a0013751e52aff516fd9c9",
+      "recorded_at": "2026-09-08T18:14:47.781765+00:00",
+      "to_state": "catching_up",
+      "transition_id": "06577713-75e2-4959-a6c9-2453ccae1b79",
+      "transition_policy_version": "1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_lifecycle_transition",
+    "record": {
+      "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+      "command_digest": "sha256:6a0ed8de481703f6ef3d89611705bfce508f01ac534242025943f82c9a85d6b0",
+      "evidence": {
+        "digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+        "kind": "preparation"
+      },
+      "from_state": null,
+      "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "ordinal": "1",
+      "previous_receipt_digest": null,
+      "principal": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+      "receipt_digest": "sha256:6de5777ac99acfa199033fd0bdc06899f1f3430739afab7d1650164d6d9281bd",
+      "recorded_at": "2026-09-08T18:14:47.187116+00:00",
+      "to_state": "prepared",
+      "transition_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "transition_policy_version": "1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_lifecycle_transition",
+    "record": {
+      "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+      "command_digest": "sha256:60c10e3a65e01704d6166ccf514a7b6917694f4524ed8abe216a8a29ea75eff5",
+      "evidence": {
+        "envelope_digest": "sha256:a7e50b3274aafc0aae0c8a915d0d9d732db137881f81c2c258134f4909cb0ac7",
+        "kind": "qualification",
+        "qualification_id": "4f0ec314-e8c6-4e53-87b0-79edff5446cc"
+      },
+      "from_state": "importing",
+      "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "ordinal": "4",
+      "previous_receipt_digest": "sha256:07c976cc8dc93e9958fe9ad51c2e05af536f502b5442e2c8d8b9165cb9341fb5",
+      "principal": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+      "receipt_digest": "sha256:9e718aff331ee79ba8c3359d1e8d88e41902a199b871e563d4460141c04581af",
+      "recorded_at": "2026-09-08T18:14:47.360553+00:00",
+      "to_state": "validated",
+      "transition_id": "63cc3cf0-728e-40e4-8da5-aed2d28b1d93",
+      "transition_policy_version": "1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_lifecycle_transition",
+    "record": {
+      "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+      "command_digest": "sha256:983c4e1522c57b42eb48bc0c351e92f77315170bd3fd90d92dae60996daccfe9",
+      "evidence": {
+        "digest": "sha256:7a12d54cb57caeaabdcb55d99994d3e318010fbd99c39ab1bacf35929f7617fd",
+        "kind": "preparation"
+      },
+      "from_state": "prepared",
+      "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "ordinal": "2",
+      "previous_receipt_digest": "sha256:6de5777ac99acfa199033fd0bdc06899f1f3430739afab7d1650164d6d9281bd",
+      "principal": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+      "receipt_digest": "sha256:a4563e4f0e0ae7f42a11866de80e42b59694083818755cc0a2a69e027b7f78f0",
+      "recorded_at": "2026-09-08T18:14:47.245551+00:00",
+      "to_state": "snapshot_bound",
+      "transition_id": "a9009c20-e105-4df0-ba7c-b12e9b590c40",
+      "transition_policy_version": "1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_lifecycle_transition",
+    "record": {
+      "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+      "command_digest": "sha256:466e9a6744b974b42380e4b2d99bfc0cb2db32f239c09258a6d6ea12a76f3c66",
+      "evidence": {
+        "digest": "sha256:2a151b916110db8545b1147677dc46dd9cb220ac110ee3f7285733c54da28d44",
+        "kind": "import_job"
+      },
+      "from_state": "snapshot_bound",
+      "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "ordinal": "3",
+      "previous_receipt_digest": "sha256:a4563e4f0e0ae7f42a11866de80e42b59694083818755cc0a2a69e027b7f78f0",
+      "principal": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+      "receipt_digest": "sha256:07c976cc8dc93e9958fe9ad51c2e05af536f502b5442e2c8d8b9165cb9341fb5",
+      "recorded_at": "2026-09-08T18:14:47.298696+00:00",
+      "to_state": "importing",
+      "transition_id": "dab031b9-568e-4bd5-9797-2af65711b7a2",
+      "transition_policy_version": "1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  },
+  {
+    "kind": "migration_lifecycle_transition",
+    "record": {
+      "authorization_decision_id": "931d3105-165d-4e2b-a9d5-0e2ad3b4dd39",
+      "command_digest": "sha256:cb4a2381c582f7e7a7fee79df7e5e1ea9e159d52ec36a2a67deab9acceed5886",
+      "evidence": {
+        "envelope_digest": "sha256:a7e50b3274aafc0aae0c8a915d0d9d732db137881f81c2c258134f4909cb0ac7",
+        "kind": "qualification",
+        "qualification_id": "4f0ec314-e8c6-4e53-87b0-79edff5446cc"
+      },
+      "from_state": "validated",
+      "migration_id": "5efcc37c-642a-46e6-825d-dd1ba21cb2e5",
+      "ordinal": "5",
+      "previous_receipt_digest": "sha256:9e718aff331ee79ba8c3359d1e8d88e41902a199b871e563d4460141c04581af",
+      "principal": "3f1a766b-37e6-4619-92b2-9a7586422e58",
+      "receipt_digest": "sha256:4dc60ba29cc4f7b0e1c4359b09726dd5762a01441f75bfd52389ccd26d627160",
+      "recorded_at": "2026-09-08T18:14:47.420304+00:00",
+      "to_state": "awaiting_attestation",
+      "transition_id": "dad8a21a-78b2-4002-969c-669b9e5c5a59",
+      "transition_policy_version": "1",
+      "workspace_id": "a9c9e672-3665-4c61-8c16-63db39bf4bed"
+    },
+    "schema_version": "agentdoc.cloud.export_native_fact.v0"
+  }
+]

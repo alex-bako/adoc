@@ -105,6 +105,7 @@ const ANCHORS: &[&str] = &[
     "registry:managed-state-dimensions",
     "registry:proof-obligation-states",
     "registry:proof-obligation-stages",
+    "registry:migration-lifecycle-states",
 ];
 
 /// Tables whose ids are section-scoped bare words, not globally unique ids.
@@ -119,6 +120,7 @@ const VOCABULARY_ANCHORS: &[&str] = &[
     "registry:replay-postures",
     "registry:proof-obligation-states",
     "registry:proof-obligation-stages",
+    "registry:migration-lifecycle-states",
 ];
 
 /// True for `adoc.<path>.v<digits>` or `agentdoc.<path>.v<digits>` — the envelope
@@ -2569,4 +2571,28 @@ fn deletion_incomplete_is_registered_only_as_cloud_code() {
     let doc = registry();
     assert!(anchored_ids(&doc, "registry:cloud-codes").contains("privacy.deletion_incomplete"));
     assert!(!anchored_ids(&doc, "registry:gate-codes").contains("privacy.deletion_incomplete"));
+}
+
+#[test]
+fn migration_lifecycle_vocabulary_and_cloud_refusal_are_registered() {
+    let doc = registry();
+    let schema: serde_json::Value = serde_json::from_str(&read_repo_doc(
+        "docs/agent/v0/schema/agentdoc.cloud.migration_transition_request.v0.schema.json",
+    ))
+    .unwrap();
+    let states: BTreeSet<String> = schema["$defs"]["state"]["enum"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|v| v.as_str().unwrap().to_owned())
+        .collect();
+    assert_eq!(states.len(), 10);
+    assert_eq!(
+        states,
+        anchored_ids(&doc, "registry:migration-lifecycle-states")
+    );
+    assert!(anchored_ids(&doc, "registry:cloud-codes").contains("migration.illegal_transition"));
+    assert!(
+        !anchored_ids(&doc, "registry:diagnostic-codes").contains("migration.illegal_transition")
+    );
 }
