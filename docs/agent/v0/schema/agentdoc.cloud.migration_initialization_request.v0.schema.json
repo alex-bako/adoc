@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_request.v0.schema.json",
+  "title": "AgentDoc Cloud Migration Initialization Request",
+  "description": "Cloud-owned authenticated human command, at most 16 KiB of exact UTF-8 JSON. The native operation derives the complete eligible target set from retained T3 qualification; identity and session come only from authenticated context. Schema conformance alone does not authorize initialization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "qualification_id",
+    "qualification_envelope_digest",
+    "qualification_receipt_digest",
+    "meaning",
+    "rationale"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "agentdoc.cloud.migration_initialization_request.v0"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "qualification_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "qualification_envelope_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "qualification_receipt_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "meaning": {
+      "const": "accept_exact_revision_and_qualifying_history_as_initialization_evidence"
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "\\S",
+      "description": "Human rationale. Native admission additionally limits the exact UTF-8 encoding to 4096 bytes."
+    }
+  }
+}

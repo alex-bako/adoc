@@ -185,6 +185,9 @@ The 13 `agentdoc.cloud.*` rows below whose owning slice is E5 also inventory imp
 | `agentdoc.cloud.portable_export_finalization.v0` | cloud | E6.6.T5 | Closed release_authorized/selection_changed response; changed access or frozen content releases no archive and requires a fresh request; exact version and closed schema |
 | `agentdoc.cloud.migration_import_result.v0` | cloud | E7.1 | native import RPC transport response maps the request to inactive candidate IDs; no portable domain or activation authority; schema published |
 | `agentdoc.cloud.migration_qualification_result.v0` | cloud | E7.1 | native qualification admission response; exact request/qualification IDs, outcome, unchanged T2 candidate mapping and sorted internal Source Record/Binding UUID references; no portable domain authority; schema published |
+| `agentdoc.cloud.migration_initialization_request.v0` | cloud | E7.1.T4 | closed authenticated human command binding exact qualification and explicit acceptance meaning/rationale; native complete eligible-set and current migration.approve checks; schema and MCP resource published |
+| `agentdoc.cloud.migration_initialization_attestation.v0` | cloud | E7.1.T4 | immutable exact-command/qualification/human/session/authorization attestation; canonical native JSON plus newline defines digest; no verification assertion; schema and MCP resource published |
+| `agentdoc.cloud.migration_initialization_result.v0` | cloud | E7.1.T4 | retained attestation plus sorted native promotion/governance/initial-effectivity references preserving original Object ID and semantic hash; decimal sequence strings; native identity joins and authorization remain required; complete portable receipt and cutover remain downstream; schema and MCP resource published |
 <!-- /registry:envelopes-planned -->
 
 ## Diagnostic Codes — shipped, owner `adoc`

@@ -6048,3 +6048,179 @@ fn migration_qualification_actual_outputs_match_closed_schemas() {
         &native,
     );
 }
+
+#[test]
+fn migration_initialization_cloud_records_preserve_closed_exact_evidence() {
+    let id = "00000000-0000-4000-8000-000000000001";
+    let digest = format!("sha256:{}", "a".repeat(64));
+    let semantic_hash = format!("sha256:{}", "b".repeat(64));
+    let meaning = "accept_exact_revision_and_qualifying_history_as_initialization_evidence";
+    let request = json!({
+        "schema_version":"agentdoc.cloud.migration_initialization_request.v0",
+        "request_id":id,"qualification_id":id,"qualification_envelope_digest":digest,
+        "qualification_receipt_digest":digest,"meaning":meaning,"rationale":"Accept this exact revision and retained history."
+    });
+    let attestation = json!({
+        "schema_version":"agentdoc.cloud.migration_initialization_attestation.v0",
+        "request_id":id,"request_digest":digest,"workspace_id":id,"qualification_id":id,
+        "migration_request_digest":digest,"qualification_envelope_digest":digest,
+        "qualification_receipt_digest":digest,"qualification_policy_version":"1",
+        "lifecycle_mapping_version":"1","initialization_policy_version":"migration-initialization-v1",
+        "principal_id":id,"identity_session_id":id,"auth_session_id":id,
+        "external_identity_link_id":id,"authorization_decision_id":id,
+        "authorization_decision_digest":digest,"authorization_policy_version":"existing-human-policy-v1",
+        "attested_at":"2026-09-08T14:23:01.123456+00:00","meaning":meaning,"rationale":request["rationale"]
+    });
+    let promotion = json!({
+        "object_id":"test.adopted","content_hash":semantic_hash,"canonical_id":id,"version_id":id,
+        "content_digest":digest,"source_record_id":id,"source_binding_id":id,
+        "promotion_seq":"9007199254740993","governance_event_seq":"9007199254740994",
+        "governance_event_digest":digest,"effectivity_event_seq":"9007199254740995","effectivity_event_digest":digest
+    });
+    let result = json!({
+        "schema_version":"agentdoc.cloud.migration_initialization_result.v0","request_id":id,
+        "attestation_id":id,"attestation_digest":digest,"attestation":attestation,
+        "qualification_id":id,"promotions":[promotion]
+    });
+    for (kind, value) in [
+        ("request", &request),
+        ("attestation", &attestation),
+        ("result", &result),
+    ] {
+        let name = format!("agentdoc.cloud.migration_initialization_{kind}.v0.schema.json");
+        assert_valid(&name, value);
+        let validator = validator_for(&schema(&name));
+        for field in value.as_object().unwrap().keys() {
+            let mut missing = value.clone();
+            missing.as_object_mut().unwrap().remove(field);
+            assert!(!validator.is_valid(&missing), "{kind} requires {field}");
+        }
+        for (field, bad) in [
+            ("untrusted", json!(true)),
+            ("schema_version", json!("unknown")),
+            ("request_id", json!("external-id")),
+            ("qualification_id", json!("wrong-workspace")),
+        ] {
+            let mut invalid = value.clone();
+            invalid[field] = bad;
+            assert!(!validator.is_valid(&invalid), "{kind} rejects {field}");
+        }
+        for field in value
+            .as_object()
+            .unwrap()
+            .keys()
+            .filter(|key| key.ends_with("_digest"))
+        {
+            let mut invalid = value.clone();
+            invalid[field] = json!("sha256:short");
+            assert!(
+                !validator.is_valid(&invalid),
+                "{kind} rejects malformed {field}"
+            );
+        }
+    }
+    for (kind, value) in [("request", &request), ("attestation", &attestation)] {
+        let validator = validator_for(&schema(&format!(
+            "agentdoc.cloud.migration_initialization_{kind}.v0.schema.json"
+        )));
+        for (field, bad) in [
+            ("meaning", json!("verified_true")),
+            ("rationale", json!(" \n\t")),
+            ("rationale", json!("a".repeat(4097))),
+            ("rationale", json!(false)),
+        ] {
+            let mut invalid = value.clone();
+            invalid[field] = bad;
+            assert!(!validator.is_valid(&invalid), "{kind} rejects {field}");
+        }
+        let mut boundary = value.clone();
+        boundary["rationale"] = json!("a".repeat(4096));
+        assert!(validator.is_valid(&boundary));
+    }
+    let name = "agentdoc.cloud.migration_initialization_attestation.v0.schema.json";
+    let validator = validator_for(&schema(name));
+    for (field, bad) in [
+        ("qualification_policy_version", json!("2")),
+        ("lifecycle_mapping_version", json!(1)),
+        ("initialization_policy_version", json!("other")),
+        ("authorization_policy_version", json!(" ")),
+        ("authorization_policy_version", json!("a".repeat(1025))),
+        ("attested_at", json!("2026-09-08")),
+        ("principal_id", json!("caller-supplied-name")),
+        ("identity_session_id", json!(null)),
+        ("auth_session_id", json!("session")),
+        ("external_identity_link_id", json!("link")),
+        ("authorization_decision_id", json!("decision")),
+    ] {
+        let mut invalid = attestation.clone();
+        invalid[field] = bad;
+        assert!(!validator.is_valid(&invalid), "attestation rejects {field}");
+    }
+    let name = "agentdoc.cloud.migration_initialization_result.v0.schema.json";
+    let validator = validator_for(&schema(name));
+    for field in promotion.as_object().unwrap().keys() {
+        let mut invalid = result.clone();
+        invalid["promotions"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove(field);
+        assert!(!validator.is_valid(&invalid), "promotion requires {field}");
+    }
+    for field in [
+        "promotion_seq",
+        "governance_event_seq",
+        "effectivity_event_seq",
+    ] {
+        for bad in [
+            json!(0),
+            json!(1),
+            json!("0"),
+            json!("01"),
+            json!("-1"),
+            json!("1.5"),
+            json!("1e3"),
+        ] {
+            let mut invalid = result.clone();
+            invalid["promotions"][0][field] = bad;
+            assert!(
+                !validator.is_valid(&invalid),
+                "positive decimal string {field}"
+            );
+        }
+    }
+    for (field, bad) in [
+        ("content_hash", json!("sha256:legacy")),
+        ("content_digest", json!("sha256:legacy")),
+        ("canonical_id", json!("external-id")),
+        ("source_record_id", json!("job-record-id")),
+        ("source_binding_id", json!("job-binding-id")),
+        ("verified", json!(true)),
+    ] {
+        let mut invalid = result.clone();
+        invalid["promotions"][0][field] = bad;
+        assert!(!validator.is_valid(&invalid), "promotion rejects {field}");
+    }
+    for bad in [json!([]), json!([promotion, promotion])] {
+        let mut invalid = result.clone();
+        invalid["promotions"] = bad;
+        assert!(!validator.is_valid(&invalid));
+    }
+    let mut boundary = result.clone();
+    boundary["promotions"] = json!(
+        (0..512)
+            .map(|i| {
+                let mut entry = promotion.clone();
+                entry["object_id"] = json!(format!("test.{i:03}"));
+                entry
+            })
+            .collect::<Vec<_>>()
+    );
+    assert!(validator.is_valid(&boundary));
+    let mut extra = promotion.clone();
+    extra["object_id"] = json!("test.extra");
+    boundary["promotions"].as_array_mut().unwrap().push(extra);
+    assert!(!validator.is_valid(&boundary));
+    let mut nested = result.clone();
+    nested["attestation"]["verified"] = json!(true);
+    assert!(!validator.is_valid(&nested));
+}

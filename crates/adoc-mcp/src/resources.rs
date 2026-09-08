@@ -713,6 +713,36 @@ const RESOURCES: &[AgentResource] = &[
         ),
     },
     AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_request.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration-initialization-request-v0-json",
+        title: "Migration Initialization Request JSON Schema",
+        description: "Closed Cloud-owned exact-revision human initialization request contract.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_initialization_request.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_attestation.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration-initialization-attestation-v0-json",
+        title: "Migration Initialization Attestation JSON Schema",
+        description: "Closed Cloud-owned exact-revision human initialization attestation contract.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_initialization_attestation.v0.schema.json"
+        ),
+    },
+    AgentResource {
+        uri: "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_result.v0.schema.json",
+        name: "schema-agentdoc-cloud-migration-initialization-result-v0-json",
+        title: "Migration Initialization Result JSON Schema",
+        description: "Closed Cloud-owned exact-revision human initialization result contract.",
+        mime_type: JSON_SCHEMA,
+        contents: include_str!(
+            "../../../docs/agent/v0/schema/agentdoc.cloud.migration_initialization_result.v0.schema.json"
+        ),
+    },
+    AgentResource {
         uri: "adoc://agent/v0/schema/adoc.migration_qualification.v0.schema.json",
         name: "schema-adoc-migration_qualification-v0-json",
         title: "Migration Qualification Contract JSON Schema",

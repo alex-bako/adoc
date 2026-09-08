@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_result.v0.schema.json",
+  "title": "AgentDoc Cloud Migration Initialization Result",
+  "description": "Cloud-owned response reconstructed from immutable attestation and actual promotion/governance/effectivity links. Native admission validates current authority and exact retained provenance. This response is not the complete portable migration receipt or connector-authority cutover.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "attestation_id",
+    "attestation_digest",
+    "attestation",
+    "qualification_id",
+    "promotions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "agentdoc.cloud.migration_initialization_result.v0"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "attestation_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "attestation_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "attestation": {
+      "$ref": "adoc://agent/v0/schema/agentdoc.cloud.migration_initialization_attestation.v0.schema.json"
+    },
+    "qualification_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "promotions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "uniqueItems": true,
+      "description": "Native admission enforces distinct original Object IDs sorted by Object ID and exact cross-record identity/digest joins. Sequence strings are native store-global positive bigint sequences. Semantic content_hash is distinct from native content_digest. No verification event is implied.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "object_id",
+          "content_hash",
+          "canonical_id",
+          "version_id",
+          "content_digest",
+          "source_record_id",
+          "source_binding_id",
+          "promotion_seq",
+          "governance_event_seq",
+          "governance_event_digest",
+          "effectivity_event_seq",
+          "effectivity_event_digest"
+        ],
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "content_hash": {
+            "$ref": "adoc://agent/v0/schema/adoc.migration_qualification_receipt.v0.schema.json#/properties/objects/items/properties/content_hash"
+          },
+          "canonical_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "version_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "content_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "source_record_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "source_binding_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "promotion_seq": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          },
+          "governance_event_seq": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          },
+          "governance_event_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "effectivity_event_seq": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          },
+          "effectivity_event_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}
